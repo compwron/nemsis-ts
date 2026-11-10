@@ -39,6 +39,8 @@ jobs:
       - name: Fetch and verify NEMSIS spec artifacts
         run: pnpm spec:fetch
       - run: pnpm lint
+      - name: Generated code is up to date
+        run: pnpm codegen:check
       - run: pnpm typecheck
       - run: pnpm test --coverage --reporter=default --reporter=junit --outputFile.junit=reports/junit.xml
       - run: pnpm build

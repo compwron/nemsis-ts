@@ -10,7 +10,7 @@ The canonical source is NEMSIS TAC's public git repository, not the website zips
 - **Repo:** `https://git.nemsis.org/scm/nep/nemsis_public.git` (Bitbucket, anonymous clone works)
 - **Release tags:** every published version is tagged, e.g. `3.5.1.251001CP2`, `3.5.0.251001CP6`.
   The default branch is in-progress work (it moved today) and **must not** be built against.
-- **Target versions:** both `3.5.1.251001CP2` (tag commit `ef8dfefb0481eeb1715880b8c806d50f21e1c28`,
+- **Target versions:** both `3.5.1.251001CP2` (tag commit `ef8dfefbb0481eeb1715880b8c806d50f21e1c28`,
   2025-10-08, the newest 3.5.1 release) and `3.5.0.251001CP6` (the newest 3.5.0 release). Generated code
   lives per version. v3.5.2 is scoped but not released yet
   ([timeline](https://nemsis.org/wp-content/uploads/2026/10/NEMSIS-v3.5.2-Timeline.pdf)).
@@ -73,7 +73,8 @@ plus free payer/CMS companion guides.
 ## 4. Repo layout (target)
 
 ```
-spec/nemsis.lock.json      # repo URL, tag, commit SHA, sha256 of each file we use
+spec/nemsis.lock.json      # repo URL, selected paths/extensions, tag → commit SHA per version
+spec/manifests/*.sha256    # sha256 of every fetched file, per version (filenames + hashes only)
 scripts/fetch-spec.ts      # sparse-checkout of the pinned tag into .spec/ (gitignored), verifies hashes
 scripts/codegen.ts         # .spec/XSDs → src/generated/ (committed, reviewed in PRs)
 src/generated/v3_5_1/      # types, element metadata, enums

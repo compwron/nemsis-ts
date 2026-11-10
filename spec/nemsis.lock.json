@@ -1,0 +1,20 @@
+{
+	"repository": "https://git.nemsis.org/scm/nep/nemsis_public.git",
+	"include": [
+		"XSDs/NEMSIS_XSDs",
+		"Schematron/rules",
+		"WSDL",
+		"Compliance/Pre-Testing/xml",
+		"SampleData/Schematron",
+		"SampleData/EMS/xml",
+		"SampleData/DEM/xml",
+		"SampleData/State/xml",
+		"DataDictionary/Ancillary",
+		"DefinedLists"
+	],
+	"extensions": ["csv", "json", "sch", "txt", "wsdl", "xml", "xsd", "xsl"],
+	"versions": {
+		"3.5.0.251001CP6": { "commit": "af3ea238cd9dbc7a638da5198f982742e5e8592f" },
+		"3.5.1.251001CP2": { "commit": "ef8dfefbb0481eeb1715880b8c806d50f21e1c28" }
+	}
+}

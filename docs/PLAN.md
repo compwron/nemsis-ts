@@ -57,18 +57,18 @@ plus free payer/CMS companion guides.
 
 ## 3. Tooling
 
-| Concern               | Choice                                                                                                                             | Why                                            |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Runtime               | Node 22 / 24 / 26 in CI, ESM-first, browser-safe core                                                                              | Current LTS lines                              |
-| Package manager       | pnpm (via corepack)                                                                                                                | Fast, strict                                   |
-| Language              | TypeScript, `strict`, `exactOptionalPropertyTypes`                                                                                 | NV/PN/nil need careful optionality             |
-| Tests                 | Vitest (+ `@vitest/coverage-v8`)                                                                                                   | Fast TDD watch loop, native ESM/TS             |
-| Lint/format           | Biome                                                                                                                              | One tool, no config sprawl                     |
-| Build                 | tsdown (or tsup) → ESM + `.d.ts`; check with `publint` + `@arethetypeswrong/cli`                                                   | Correct package exports                        |
-| XML parse/build       | `fast-xml-parser` (spike `xmlbuilder2` / `saxes` if we need exact order)                                                           | NEMSIS is order-sensitive (`xs:sequence`)      |
-| XSD validation        | `xmllint-wasm` (libxml2 compiled to WASM)                                                                                          | Works in Node and the browser, no native build |
-| Schematron (XSLT 2.0) | SaxonJS (`xslt3` compiler + `saxon-js` runtime). **Decided.**                                                                      | XSLT 2 is required, and libxslt is XSLT 1 only |
-| Codegen               | Our own generator over the XSDs (spike `cxsd` first, but we expect to need custom handling for NV/PN/nil attributes and enum docs) | XSD → types + element metadata                 |
+| Concern               | Choice                                                                                                                                                                        | Why                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Runtime               | Node 22 / 24 / 26 in CI, ESM-first, browser-safe core                                                                                                                         | Current LTS lines                              |
+| Package manager       | pnpm (via corepack)                                                                                                                                                           | Fast, strict                                   |
+| Language              | TypeScript, `strict`, `exactOptionalPropertyTypes`                                                                                                                            | NV/PN/nil need careful optionality             |
+| Tests                 | Vitest (+ `@vitest/coverage-v8`)                                                                                                                                              | Fast TDD watch loop, native ESM/TS             |
+| Lint/format           | Biome                                                                                                                                                                         | One tool, no config sprawl                     |
+| Build                 | tsdown (or tsup) → ESM + `.d.ts`; check with `publint` + `@arethetypeswrong/cli`                                                                                              | Correct package exports                        |
+| XML parse/build       | `fast-xml-parser` (spike `xmlbuilder2` / `saxes` if we need exact order)                                                                                                      | NEMSIS is order-sensitive (`xs:sequence`)      |
+| XSD validation        | `xmllint-wasm` (libxml2 compiled to WASM)                                                                                                                                     | Works in Node and the browser, no native build |
+| Schematron (XSLT 2.0) | SaxonJS (`xslt3` compiler + `saxon-js` runtime). **Decided.**                                                                                                                 | XSLT 2 is required, and libxslt is XSLT 1 only |
+| Codegen               | Our own strict generator (`scripts/codegen/xsd.ts`). NEMSIS uses only sequence / simpleContent / restriction / union, so `cxsd` isn't needed. Unknown constructs fail codegen | XSD → schema model + (next) TS data types      |
 
 ## 4. Repo layout (target)
 
@@ -131,18 +131,18 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 
 ## 7. Milestones
 
-| #     | Deliverable                                                                                               | First failing test                                                                  |
-| ----- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| 0     | Scaffolding: package.json, tsconfig, Biome, Vitest, `ci.yml`, Dependabot, PR template, Apache-2.0 LICENSE | `test/smoke.test.ts` (imports package entry). CI green on all Node versions         |
-| 1     | `spec/nemsis.lock.json` + `spec:fetch` with checksum verification + CI cache + `spec-watch.yml`           | Fetch test: lock file's tag SHA matches, every hash verifies, a tampered file fails |
-| 2     | Codegen: XSD → element metadata + TS types + enums for EMS/DEM/State; drift check in CI                   | Metadata ≡ `Ancillary/*_ElementDetails.txt` for all elements                        |
-| 3     | XSD validation (`xmllint-wasm`)                                                                           | Compliance `full`/`national` pass, `FailXsd` fails, with element-level errors       |
-| 4     | Parse → typed objects (NV, PN, `xsi:nil`, `CorrelationID`, custom elements)                               | All compliance + sample files parse with no unknown-element warnings                |
-| 5     | Serialize → XML in schema order                                                                           | Round-trip: canonical XML equal, and the output passes XSD                          |
-| 6     | Schematron (XSLT2 spike → runner returning typed SVRL)                                                    | Matches expected SVRL in `SampleData/Schematron`. `FailSchematron` fails            |
-| 7     | Defined lists / code-set lookups                                                                          | Every `DefinedLists` code resolves. Enum docs come from the XSD                     |
-| 8     | First release `0.1.0` (npm, provenance via GHA OIDC)                                                      | `attw`/`publint` clean. Docs examples compile under test                            |
-| later | 3.5.2 when released, WSDL client, X12 837P/835, FHIR mPSC                                                 | n/a                                                                                 |
+| #     | Deliverable                                                                                                                               | First failing test                                                                         |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 0     | Scaffolding: package.json, tsconfig, Biome, Vitest, `ci.yml`, Dependabot, PR template, Apache-2.0 LICENSE                                 | `test/smoke.test.ts` (imports package entry). CI green on all Node versions                |
+| 1     | `spec/nemsis.lock.json` + `spec:fetch` with checksum verification + CI cache + `spec-watch.yml`                                           | Fetch test: lock file's tag SHA matches, every hash verifies, a tampered file fails        |
+| 2     | **2a (done):** XSD → schema model (tree, simple types, facets, enums, nemsisTacDoc) per version; drift check in CI. **2b:** TS data types | Model ≡ `Ancillary/*_ElementDetails.txt` for every element (1,302 elements, both versions) |
+| 3     | XSD validation (`xmllint-wasm`)                                                                                                           | Compliance `full`/`national` pass, `FailXsd` fails, with element-level errors              |
+| 4     | Parse → typed objects (NV, PN, `xsi:nil`, `CorrelationID`, custom elements)                                                               | All compliance + sample files parse with no unknown-element warnings                       |
+| 5     | Serialize → XML in schema order                                                                                                           | Round-trip: canonical XML equal, and the output passes XSD                                 |
+| 6     | Schematron (XSLT2 spike → runner returning typed SVRL)                                                                                    | Matches expected SVRL in `SampleData/Schematron`. `FailSchematron` fails                   |
+| 7     | Defined lists / code-set lookups                                                                                                          | Every `DefinedLists` code resolves. Enum docs come from the XSD                            |
+| 8     | First release `0.1.0` (npm, provenance via GHA OIDC)                                                                                      | `attw`/`publint` clean. Docs examples compile under test                                   |
+| later | 3.5.2 when released, WSDL client, X12 837P/835, FHIR mPSC                                                                                 | n/a                                                                                        |
 
 ## 8. Decisions (2026-11-09)
 

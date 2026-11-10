@@ -15,7 +15,8 @@ import type {
 	SimpleType,
 } from "../../src/schema/types.ts";
 
-const RESERVED = new Set(["codes", "Leaf", "NillableLeaf"]);
+/** Names imported into each generated dataset module (`codes` can't clash: interfaces are PascalCase). */
+const RESERVED = new Set(["Leaf", "NillableLeaf"]);
 
 export function typeName(simpleType: string): string {
 	return simpleType.replace(/[^A-Za-z0-9_$]/g, "_");

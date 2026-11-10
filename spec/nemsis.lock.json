@@ -3,6 +3,7 @@
 	"include": [
 		"XSDs/NEMSIS_XSDs",
 		"Schematron/rules",
+		"Schematron/DevelopmentKit/Schematron/utilities/iso-schematron-xslt2",
 		"WSDL",
 		"Compliance/Pre-Testing/xml",
 		"SampleData/Schematron",

@@ -16,7 +16,7 @@ const pkg = JSON.parse(
 const short = (v: string) => v.split(".").slice(0, 3).join(".");
 
 describe("package exports", () => {
-	it("has subpath exports per supported version (+ /xsd) plus validate and node", () => {
+	it("has subpath exports per supported version (+ /xsd) plus validate, schematron and node", () => {
 		const subpaths = Object.keys(pkg.exports).filter((k) => k !== ".");
 		expect(subpaths.sort()).toEqual(
 			[
@@ -25,10 +25,16 @@ describe("package exports", () => {
 					`./${short(v)}/xsd`,
 				]),
 				"./node",
+				"./schematron",
 				"./validate",
 			].sort(),
 		);
-		for (const s of [...SUPPORTED_VERSIONS.map(short), "node", "validate"]) {
+		for (const s of [
+			...SUPPORTED_VERSIONS.map(short),
+			"node",
+			"schematron",
+			"validate",
+		]) {
 			expect(pkg.exports[`./${s}`]).toEqual({
 				types: `./dist/${s}.d.ts`,
 				import: `./dist/${s}.js`,
@@ -36,11 +42,20 @@ describe("package exports", () => {
 		}
 	});
 
-	it("exposes the XSD validator and Node helpers on their own subpaths", async () => {
+	it("exposes the validators and Node helpers on their own subpaths", async () => {
 		const validate = await import("../src/validate.ts");
+		const schematron = await import("../src/schematron.ts");
 		const node = await import("../src/node.ts");
 		expect(Object.keys(validate).sort()).toEqual(["createXsdValidator"]);
-		expect(Object.keys(node).sort()).toEqual(["loadSchemaFiles"]);
+		expect(Object.keys(schematron).sort()).toEqual([
+			"SCHEMATRON_PATCHES",
+			"createSchematronValidator",
+			"parseSvrl",
+		]);
+		expect(Object.keys(node).sort()).toEqual([
+			"compileSchematron",
+			"loadSchemaFiles",
+		]);
 	});
 
 	it("keeps schema data out of the root entry", () => {

@@ -115,6 +115,20 @@ const out = serialize(parsed); // XML again, elements in schema order; parse(out
 const validator = createXsdValidator(loadSchemaFiles("NEMSIS_XSDs"));
 const result = await validator.validate(xml);
 // { valid: false, dataset: "EMSDataSet", errors: [{ line: 121, element: "eSituation", message: "…" }] }
+
+// Schematron (business rules): optional peers `saxon-js` + `xslt3` (Saxonica license, not bundled).
+import { compileSchematron } from "nemsis-ts/node";
+import { createSchematronValidator } from "nemsis-ts/schematron";
+
+// Slow (~30 s): compile once from a NEMSIS release checkout and cache the JSON.
+const sef = await compileSchematron({
+	schematron: "Schematron/rules/EMSDataSet.sch",
+	skeletonDir:
+		"Schematron/DevelopmentKit/Schematron/utilities/iso-schematron-xslt2",
+});
+const rules = createSchematronValidator(sef);
+const report = await rules.validate(xml);
+// { valid: false, issues: [{ id: "nemSch_e002", severity: "error", location: "/*:EMSDataSet…", text: "…" }], svrl }
 ```
 
 ## Roadmap (tentative)
@@ -124,7 +138,7 @@ const result = await validator.validate(xml);
 - [x] NEMSIS XML parse into typed documents
 - [x] NEMSIS XML serialize with round-trip tests
 - [x] XSD validation
-- [ ] Schematron validation
+- [x] Schematron validation
 - [ ] NEMSIS value lists / code sets
 - [ ] X12 837P generation from an EMS record
 - [ ] X12 835 parsing

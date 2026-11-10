@@ -13,6 +13,7 @@ export default defineConfig({
 		"3.5.0/xsd": "src/xsd/v3_5_0.ts",
 		"3.5.1/xsd": "src/xsd/v3_5_1.ts",
 		validate: "src/validate.ts",
+		schematron: "src/schematron.ts",
 		node: "src/node.ts",
 	},
 	format: ["esm"],

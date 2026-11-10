@@ -17,6 +17,7 @@ export default defineConfig({
 				"scripts/fetch-spec.ts",
 				"scripts/spec-watch.ts",
 				"scripts/check-bundle.ts",
+				"scripts/schematron-compile.ts",
 			],
 			reporter: ["text", "lcov", "json-summary"],
 			// Current: ~99% statements/lines/functions, ~89% branches. Thresholds leave a little

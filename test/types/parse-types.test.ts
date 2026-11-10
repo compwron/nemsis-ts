@@ -5,8 +5,10 @@ import {
 	type DEM,
 	type EMS,
 	NemsisParseError,
+	NemsisSerializeError,
 	type ParseResult,
 	parse,
+	serialize,
 } from "../../src/3.5.1.ts";
 import type { v3_5_0 } from "../../src/index.ts";
 
@@ -36,5 +38,20 @@ describe("typed parse (3.5.1)", () => {
 
 	it("exposes NemsisParseError for malformed input", () => {
 		expect(() => parse("<EMSDataSet")).toThrow(NemsisParseError);
+	});
+});
+
+describe("typed serialize (3.5.1)", () => {
+	it("accepts a parse result as is, and typed documents", () => {
+		const result = parse(xml);
+		expect(serialize(result)).toContain("<Header/>");
+		const doc: EMS.EMSDataSet = { Header: [] };
+		expect(
+			serialize({ dataset: "EMSDataSet", document: doc }, { indent: false }),
+		).toContain("<EMSDataSet");
+		// @ts-expect-error the document must match the dataset
+		expect(() => serialize({ dataset: "DEMDataSet", document: doc })).toThrow(
+			NemsisSerializeError,
+		);
 	});
 });

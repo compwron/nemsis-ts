@@ -156,6 +156,11 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 - **Bundles (2026-11-09):** one subpath export per version (`nemsis-ts/3.5.0`, `nemsis-ts/3.5.1`). The root
   entry has helpers and types only, and CI's `check:bundle` enforces a 20 KiB budget and no cross-version data.
 
+- **Bundled XSDs (2026-11-09):** optional at build time. `NEMSIS_BUNDLE_XSD=1 pnpm build` (or
+  `pnpm build:with-xsd`) embeds each version's manifest-verified XSDs in `nemsis-ts/<version>/xsd`. The
+  default build ships stubs (`bundled: false`, no files). Both variants have identical types, the repo
+  never contains NEMSIS files, and CI checks both builds.
+
 ## 9. Upstream findings
 
 - **Stale EMS sample data (found 2026-11-09):** all 40 `SampleData/EMS/xml` files in both `3.5.0.251001CP6`
@@ -166,8 +171,5 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 
 ## 10. Open questions
 
-- **Ship XSDs in the package?** Runtime validation currently requires the caller to supply the XSD files.
-  Bundling them (≈1.5 MB per version, as a subpath like `nemsis-ts/3.5.1/xsd`) would make validation
-  zero-config, but it redistributes raw NEMSIS files.
 - **Browser check:** `xmllint-wasm` ships a browser build, but we haven't tested it in a browser yet
   (planned: a Playwright or Vitest browser-mode smoke test).

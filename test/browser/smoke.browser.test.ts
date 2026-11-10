@@ -3,7 +3,7 @@
  * loads, parsing works, and XSD validation runs on xmllint-wasm's browser build, with no Node APIs.
  */
 import { describe, expect, it } from "vitest";
-import { parse, schema } from "../../src/3.5.1.ts";
+import { parse, schema, serialize } from "../../src/3.5.1.ts";
 import { createXsdValidator } from "../../src/validate.ts";
 
 const NS = `xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.nemsis.org" targetNamespace="http://www.nemsis.org" elementFormDefault="qualified"`;
@@ -104,6 +104,13 @@ describe("in a browser", () => {
 				expect(
 					result.document.Header[0]?.PatientCareReport.length,
 				).toBeGreaterThan(0);
+			});
+
+			it("round-trips a national compliance case and the output passes XSD", async () => {
+				const parsed = parse(file("national/2025-EMS-1-Overdose_v351.xml"));
+				const out = serialize(parsed);
+				expect(parse(out).document).toEqual(parsed.document);
+				expect((await validator.validate(out)).errors).toEqual([]);
 			});
 
 			it("fails the FailXsd compliance case with the same error as in Node", async () => {

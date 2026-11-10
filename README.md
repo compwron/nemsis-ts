@@ -98,7 +98,7 @@ See **[docs/PLAN.md](docs/PLAN.md)** for the full build plan (CI, TDD, milestone
 ```ts
 import { readFileSync } from "node:fs";
 import type { EMS } from "nemsis-ts/3.5.1"; // typed documents: EMS.PatientCareReport, codes.*, …
-import { parse, schema } from "nemsis-ts/3.5.1"; // parser; schema model (element tree, simple types, NEMSIS docs)
+import { parse, schema, serialize } from "nemsis-ts/3.5.1"; // parse/serialize; schema model (element tree, simple types, NEMSIS docs)
 import { createXsdValidator } from "nemsis-ts/validate";
 import { loadSchemaFiles } from "nemsis-ts/node";
 
@@ -109,6 +109,7 @@ if (parsed.dataset === "EMSDataSet") {
 		parsed.document.Header[0]?.PatientCareReport[0];
 }
 // parsed.issues: content the schema could not place, e.g. { code: "missing-element", path: "…/ePatient.25", line: 40 }
+const out = serialize(parsed); // XML again, elements in schema order; parse(out) gives back the same document
 
 // NEMSIS XSDs are not bundled: point at a NEMSIS release's XSDs/NEMSIS_XSDs directory.
 const validator = createXsdValidator(loadSchemaFiles("NEMSIS_XSDs"));
@@ -121,7 +122,7 @@ const result = await validator.validate(xml);
 - [x] Project scaffolding (TypeScript, tests, CI)
 - [x] XSD → schema model + TypeScript document types for EMS / DEM / State (3.5.0, 3.5.1)
 - [x] NEMSIS XML parse into typed documents
-- [ ] NEMSIS XML serialize with round-trip tests
+- [x] NEMSIS XML serialize with round-trip tests
 - [x] XSD validation
 - [ ] Schematron validation
 - [ ] NEMSIS value lists / code sets

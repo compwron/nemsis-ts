@@ -11,6 +11,8 @@ export default defineConfig({
 	},
 	format: ["esm"],
 	platform: "neutral",
+	// Node built-ins are only used by the `nemsis-ts/node` entry; keep them as imports.
+	external: [/^node:/],
 	dts: true,
 	clean: true,
 });

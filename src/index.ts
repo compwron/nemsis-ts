@@ -7,5 +7,7 @@ export const SUPPORTED_VERSIONS: readonly [
 export type NemsisVersion = (typeof SUPPORTED_VERSIONS)[number];
 
 export { schemas } from "./generated/index.ts";
+export type * from "./generated/types.ts";
 export { effectiveFacets, leaves, walk } from "./schema/model.ts";
 export type * from "./schema/types.ts";
+export type * from "./schema/values.ts";

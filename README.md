@@ -116,6 +116,11 @@ const validator = createXsdValidator(loadSchemaFiles("NEMSIS_XSDs"));
 const result = await validator.validate(xml);
 // { valid: false, dataset: "EMSDataSet", errors: [{ line: 121, element: "eSituation", message: "…" }] }
 
+// Defined lists (suggested code sets: ICD-10 symptoms, RxNorm medications, ...), kept in their own entry.
+import { definedLists } from "nemsis-ts/3.5.1/lists";
+definedLists.find("eMedications.03", "161", "9924003")?.code.suggestedLabel; // "Acetaminophen (Tylenol)"
+definedLists.listsForElement("eSituation.09").map((l) => l.name); // ["Symptom"]
+
 // Schematron (business rules): optional peers `saxon-js` + `xslt3` (Saxonica license, not bundled).
 import { compileSchematron } from "nemsis-ts/node";
 import { createSchematronValidator } from "nemsis-ts/schematron";
@@ -139,7 +144,7 @@ const report = await rules.validate(xml);
 - [x] NEMSIS XML serialize with round-trip tests
 - [x] XSD validation
 - [x] Schematron validation
-- [ ] NEMSIS value lists / code sets
+- [x] NEMSIS defined lists / code sets
 - [ ] X12 837P generation from an EMS record
 - [ ] X12 835 parsing
 - [ ] NEMSIS → FHIR (IHE mPSC) mapping

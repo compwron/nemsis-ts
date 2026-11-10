@@ -2,6 +2,20 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-10 — Defined lists (Milestone 7)
+
+**Looked at**
+- `DefinedLists/` in both tags: six lists (CauseOfInjury, Impression, IncidentLocationType, Medication,
+  Procedure, Symptom), each as XML/JSON/CSV/XLSX, plus `DefinedLists.xsd`. About 150 KB per version as JSON.
+- 3.5.0 vs 3.5.1: same lists, same elements; 3.5.1 adds one Procedure code (116859006, dated 2025-01-14),
+  updated source URLs, and widens the list-level value type from 15 to 18 characters.
+- Upstream inconsistencies between the renderings: see PLAN §9.
+- Elements mapped: eSituation.09/.10 → Symptom, eSituation.11/.12 → Impression, eMedications.03 and the
+  dConfiguration/sConfiguration equivalents → Medication, and so on.
+
+**Decisions:** lists live behind `nemsis-ts/<version>/lists` (about 110 KiB each) so the version entry stays
+unchanged. Generated from the XML only; JSON and CSV are test oracles.
+
 ## 2026-11-10 — SaxonJS bugs, CI limits
 
 **Looked at**

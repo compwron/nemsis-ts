@@ -39,6 +39,12 @@ function fixture({ commit = COMMIT, demCode = "" } = {}) {
 		join(xsds, "StateDataSet_v3.xsd"),
 		dataset("StateDataSet", code),
 	);
+	const lists = join(work, ".spec", VERSION, "DefinedLists", "Demo");
+	mkdirSync(lists, { recursive: true });
+	writeFileSync(
+		join(lists, "Demo.xml"),
+		`<DefinedList xmlns="http://www.nemsis.org" date="2025-01-01"><Header><SourceVocabularies><SourceVocabulary>V</SourceVocabulary></SourceVocabularies><NemsisTypes><NemsisType>T</NemsisType></NemsisTypes><NemsisElements><NemsisElement>e.01</NemsisElement></NemsisElements></Header><Codes><Code date="2025-01-01"><Value>1</Value><SourceLabel>s</SourceLabel><SuggestedLabel>g</SuggestedLabel></Code></Codes></DefinedList>`,
+	);
 	writeFileSync(join(work, ".spec", VERSION, ".commit"), `${commit}\n`);
 	writeFileSync(
 		join(work, "spec", "nemsis.lock.json"),
@@ -83,6 +89,8 @@ describe("generate", () => {
 		);
 		expect(out("v3_5_9/simpleTypes.ts")).toContain('"Code": {');
 		expect(out("v3_5_9/index.ts")).toContain(`version: "${VERSION}"`);
+		expect(out("v3_5_9/lists.ts")).toContain(`"name": "Demo"`);
+		expect(out("v3_5_9/lists.ts")).toContain(`"value": "1"`);
 		expect(out("v3_5_9/types/codes.ts")).toContain(
 			'export type Code =\n\t| "1";',
 		);

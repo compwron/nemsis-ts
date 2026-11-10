@@ -1,9 +1,16 @@
 /** Generate `src/generated/` (schema model + document types) from fetched NEMSIS XSDs. */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import type { DatasetName, SimpleType } from "../../src/schema/types.ts";
 import { LOCK_PATH, REPO_ROOT, readLock, SPEC_DIR } from "../lib/spec.ts";
+import { readDefinedList } from "./lists.ts";
 import { emitDatasetTypes, emitSimpleTypes } from "./types.ts";
 import { readSchema } from "./xsd.ts";
 
@@ -120,6 +127,22 @@ export function generate(options: GenerateOptions = {}): void {
 				DATASETS.map((d) => `import { ${d} } from "./${d}.ts";\n`).join("") +
 				`import { simpleTypes } from "./simpleTypes.ts";\n\n` +
 				`export const schema: VersionSchema = {\n\tversion: "${version}",\n\tsimpleTypes,\n\tdatasets: { ${DATASETS.join(", ")} },\n};\n`,
+		);
+		const listsDir = join(specDir, version, "DefinedLists");
+		const lists = readdirSync(listsDir, { withFileTypes: true })
+			.filter((d) => d.isDirectory())
+			.map((d) => d.name)
+			.sort()
+			.map((name) =>
+				readDefinedList(
+					readFileSync(join(listsDir, name, `${name}.xml`), "utf8"),
+					name,
+				),
+			);
+		writeFileSync(
+			join(out, "lists.ts"),
+			`${header(version, commit)}import type { DefinedList } from "../../lists/types.ts";\n\n` +
+				`export const lists: readonly DefinedList[] = ${JSON.stringify(lists, null, "\t")};\n`,
 		);
 		indexLines.push(`import { schema as ${dir} } from "./${dir}/index.ts";\n`);
 		mapLines.push(`\t"${version}": ${dir},\n`);

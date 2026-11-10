@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { parse, schema, serialize } from "../../src/3.5.1.ts";
+import { definedLists } from "../../src/lists/v3_5_1.ts";
 import { createXsdValidator } from "../../src/validate.ts";
 
 const NS = `xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.nemsis.org" targetNamespace="http://www.nemsis.org" elementFormDefault="qualified"`;
@@ -52,6 +53,12 @@ describe("in a browser", () => {
 		);
 		expect(result.dataset).toBe("EMSDataSet");
 		expect(result.document).toEqual({ Header: [{}] });
+	});
+
+	it("looks up NEMSIS defined lists", () => {
+		expect(
+			definedLists.find("eMedications.03", "161", "9924003")?.code.sourceLabel,
+		).toBe("acetaminophen");
 	});
 
 	it("validates against an inline schema", async () => {

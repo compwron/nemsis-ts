@@ -31,9 +31,17 @@
 			"types": "./dist/node.d.ts",
 			"import": "./dist/node.js"
 		},
+		"./3.5.0/lists": {
+			"types": "./dist/3.5.0/lists.d.ts",
+			"import": "./dist/3.5.0/lists.js"
+		},
 		"./3.5.0/xsd": {
 			"types": "./dist/3.5.0/xsd.d.ts",
 			"import": "./dist/3.5.0/xsd.js"
+		},
+		"./3.5.1/lists": {
+			"types": "./dist/3.5.1/lists.d.ts",
+			"import": "./dist/3.5.1/lists.js"
 		},
 		"./3.5.1/xsd": {
 			"types": "./dist/3.5.1/xsd.d.ts",

@@ -22,6 +22,7 @@ describe("package exports", () => {
 			[
 				...SUPPORTED_VERSIONS.flatMap((v) => [
 					`./${short(v)}`,
+					`./${short(v)}/lists`,
 					`./${short(v)}/xsd`,
 				]),
 				"./node",

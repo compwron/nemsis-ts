@@ -35,6 +35,12 @@ const { createXsdValidator } = (await import(
 	pathToFileURL(join(dist, "validate.js")).href
 )) as ValidateModule;
 
+// A line that only the given version's Procedure list contains (3.5.1 added this code).
+const lists: Record<string, string | undefined> = {
+	"3.5.0.251001CP6": undefined,
+	"3.5.1.251001CP2": "116859006",
+};
+
 for (const v of versions) {
 	const s = short(v);
 	const js = readFileSync(join(dist, `${s}.js`), "utf8");
@@ -43,6 +49,19 @@ for (const v of versions) {
 		if (js.includes(other)) errors.push(`dist/${s}.js also contains ${other}`);
 	}
 	console.log(`dist/${s}.js: ${(js.length / 1024).toFixed(0)} KiB`);
+
+	// The lists entry carries only its own version's lists, and the version entry carries none.
+	const listsJs = readFileSync(join(dist, s, "lists.js"), "utf8");
+	if (!listsJs.includes("eSituation.09"))
+		errors.push(`dist/${s}/lists.js has no defined lists`);
+	if (js.includes("SuggestedLabel") || js.includes("suggestedLabel"))
+		errors.push(`dist/${s}.js unexpectedly contains defined-list data`);
+	for (const other of versions.filter((o) => o !== v)) {
+		const marker = lists[other];
+		if (marker && listsJs.includes(marker))
+			errors.push(`dist/${s}/lists.js also contains ${other} list data`);
+	}
+	console.log(`dist/${s}/lists.js: ${(listsJs.length / 1024).toFixed(0)} KiB`);
 
 	const xsdPath = join(dist, s, "xsd.js");
 	const xsd = (await import(pathToFileURL(xsdPath).href)) as XsdModule;

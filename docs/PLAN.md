@@ -140,7 +140,7 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 | 4     | **Done:** `parse(xml)` per version → dataset-discriminated typed document (NV, PN, `xsi:nil`, `CorrelationID`, attributes), issues with path/line. Comments and PIs are not preserved. DOCTYPE is rejected                                              | All 127 compliance + sample files per version are a lossless view of the XML (vs fast-xml-parser)                                           |
 | 5     | **Done:** `serialize(doc)` per version → XML in `xs:sequence` order, exact values (escaped), strict about shape (`NemsisSerializeError` with path; no silent data loss)                                                                                 | Round-trip of 125 files per version: same content and order, reparses equal, same XSD outcome as the original                               |
 | 6     | **Done:** Schematron via SaxonJS (optional peers `saxon-js`/`xslt3`). `compileSchematron` (`nemsis-ts/node`) runs the official ISO XSLT2 skeleton → SEF; `createSchematronValidator` (`nemsis-ts/schematron`) returns typed SVRL issues                 | All 250 `SampleData/Schematron` cases per version match the expected SVRL exactly. `FailSchematron` fails, `full`/`national` have no errors |
-| 7     | Defined lists / code-set lookups                                                                                                                                                                                                                        | Every `DefinedLists` code resolves. Enum docs come from the XSD                                                                             |
+| 7     | **Done:** the six defined lists generated per version (`nemsis-ts/<version>/lists`: `definedLists.list/listsForElement/lookup/find`). XSD enum docs were already in the schema model                                                                    | XML ≡ NEMSIS JSON ≡ CSV for every list; each list's elements and types exist in the schema and every code satisfies its type's facets       |
 | 8     | First release `0.1.0` (npm, provenance via GHA OIDC)                                                                                                                                                                                                    | `attw`/`publint` clean. Docs examples compile under test                                                                                    |
 | later | 3.5.2 when released, WSDL client, X12 837P/835, FHIR mPSC                                                                                                                                                                                               | n/a                                                                                                                                         |
 
@@ -182,6 +182,17 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
   to Saxonica.
 - **Licensing note:** SaxonJS is free to use under Saxonica's own (non-OSI) license. We do not bundle it:
   `saxon-js` and `xslt3` are optional peer dependencies, needed only for Schematron.
+
+- **Defined-list renderings disagree (found 2026-11-10):** NEMSIS publishes each list as XML, JSON, CSV
+  and XLSX. We generate from the XML and check the JSON and CSV against it. Differences found: (1) in
+  `3.5.0.251001CP6` the XML of `CauseOfInjury` and `Medication` has list date 2024-07-08 while their JSON
+  still says 2023-02-14; (2) the 3.5.0 CSVs are unquoted with M/D/YYYY dates while 3.5.1 CSVs are quoted
+  with ISO dates; (3) the `Medication` CSV puts the vocabulary name (`RxNorm`) in its `CodeType` column
+  where the XML/JSON carry the code (`9924003`), in both versions. The tests pin these. XLSX is not
+  checked. Worth reporting to NEMSIS TAC.
+- **Defined lists are suggestions, not enumerations:** codes such as ICD-10 symptoms are open vocabularies,
+  so a code outside the list is not an error. `nemsis-ts` offers lookups only and does not validate against
+  them.
 
 ## 10. Open questions
 

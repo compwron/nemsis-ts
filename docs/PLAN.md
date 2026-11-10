@@ -99,7 +99,7 @@ Milestone 0 is a **green, useful CI with no library code**.
 5. `pnpm lint` → `pnpm typecheck` → `pnpm test --coverage` → `pnpm build`
 6. **Codegen drift check:** `pnpm codegen && git diff --exit-code src/generated` (from Milestone 2)
 7. `publint` + `attw --pack` on the built package
-8. Upload coverage and JUnit reports as artifacts. Coverage threshold set once real code exists.
+8. Upload coverage and JUnit reports as artifacts. **Coverage gate:** 95% statements/lines/functions, 85% branches over `src/` and `scripts/` (generated data and thin CLI wrappers excluded).
 
 **`spec-watch.yml`**: weekly cron + `workflow_dispatch`
 - `git ls-remote --tags` on `nemsis_public`. If there's a 3.5.x tag newer than the lock file (3.5.2 is

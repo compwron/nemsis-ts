@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectiveFacets, leaves } from "../../src/schema/model.ts";
+import { effectiveFacets, leaves, walk } from "../../src/schema/model.ts";
 import type { GroupElement, SimpleType } from "../../src/schema/types.ts";
 
 const leaf = (name: string) =>
@@ -58,5 +58,34 @@ describe("effectiveFacets", () => {
 
 	it("returns no facets for built-in types", () => {
 		expect(effectiveFacets(types, "xs:string")).toEqual({});
+	});
+});
+
+describe("effectiveFacets on malformed input", () => {
+	it("throws on a cyclic restriction chain", () => {
+		const types: Record<string, SimpleType> = {
+			A: { name: "A", base: "B", facets: {} },
+			B: { name: "B", base: "A", facets: {} },
+		};
+		expect(() => effectiveFacets(types, "A")).toThrow(/Cyclic simple type A/);
+	});
+});
+
+describe("walk", () => {
+	it("yields every element with its ancestor path", () => {
+		const root: GroupElement = {
+			kind: "group",
+			name: "R",
+			minOccurs: 1,
+			maxOccurs: 1,
+			attributes: [],
+			children: [leaf("a")],
+		};
+		expect(
+			[...walk(root)].map(([el, path]) => [el.name, path.map((p) => p.name)]),
+		).toEqual([
+			["R", []],
+			["a", ["R"]],
+		]);
 	});
 });

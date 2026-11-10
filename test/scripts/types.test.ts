@@ -147,3 +147,69 @@ describe("emitDatasetTypes", () => {
 		expect(out).toContain("export interface EMSDataSet {");
 	});
 });
+
+describe("emitter name collisions", () => {
+	const group = (
+		name: string,
+		children: GroupElement["children"] = [],
+	): GroupElement => ({
+		kind: "group",
+		name,
+		minOccurs: 1,
+		maxOccurs: 1,
+		attributes: [],
+		children,
+	});
+
+	it("rejects simple types that mangle to the same identifier", () => {
+		const t = (name: string): SimpleType => ({
+			name,
+			base: "xs:string",
+			facets: {},
+		});
+		expect(() => emitSimpleTypes({ "A.B": t("A.B"), A_B: t("A_B") })).toThrow(
+			/Simple types A\.B and A_B both map to A_B/,
+		);
+	});
+
+	it("rejects groups whose interface names collide", () => {
+		expect(() =>
+			emitDatasetTypes(group("Root", [group("a.b"), group("aB")])),
+		).toThrow(/Groups a\.b and aB both map to interface AB/);
+	});
+
+	it("rejects groups that would shadow the imported value helpers", () => {
+		expect(() => emitDatasetTypes(group("Root", [group("Leaf")]))).toThrow(
+			/Group Leaf maps to reserved name Leaf/,
+		);
+	});
+
+	it("documents deprecated elements and escapes comment terminators", () => {
+		const out = emitDatasetTypes(
+			group("Root", [
+				{
+					kind: "leaf",
+					name: "x.01",
+					minOccurs: 1,
+					maxOccurs: 1,
+					nillable: false,
+					type: "xs:string",
+					attributes: [{ name: "A", required: false }],
+					doc: {
+						number: "x.01",
+						name: "X */ Y",
+						national: false,
+						state: false,
+						usage: "Optional",
+						definition: "",
+						deprecated: true,
+					},
+				},
+			]),
+		);
+		expect(out).toContain(
+			"\t * x.01: X *\\/ Y (Optional)\n\t *\n\t * @deprecated\n\t */",
+		);
+		expect(out).toContain('\t"x.01": Leaf<string, { A?: string }>;');
+	});
+});

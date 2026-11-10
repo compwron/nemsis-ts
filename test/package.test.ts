@@ -16,19 +16,28 @@ const pkg = JSON.parse(
 const short = (v: string) => v.split(".").slice(0, 3).join(".");
 
 describe("package exports", () => {
-	it("has a subpath export for every supported version", () => {
-		const subpaths = Object.keys(pkg.exports).filter(
-			(k) => k !== "." && k !== "./package.json",
-		);
+	it("has a subpath export per supported version plus validate and node", () => {
+		const subpaths = Object.keys(pkg.exports).filter((k) => k !== ".");
 		expect(subpaths.sort()).toEqual(
-			SUPPORTED_VERSIONS.map((v) => `./${short(v)}`).sort(),
+			[
+				...SUPPORTED_VERSIONS.map((v) => `./${short(v)}`),
+				"./node",
+				"./validate",
+			].sort(),
 		);
-		for (const v of SUPPORTED_VERSIONS) {
-			expect(pkg.exports[`./${short(v)}`]).toEqual({
-				types: `./dist/${short(v)}.d.ts`,
-				import: `./dist/${short(v)}.js`,
+		for (const s of [...SUPPORTED_VERSIONS.map(short), "node", "validate"]) {
+			expect(pkg.exports[`./${s}`]).toEqual({
+				types: `./dist/${s}.d.ts`,
+				import: `./dist/${s}.js`,
 			});
 		}
+	});
+
+	it("exposes the XSD validator and Node helpers on their own subpaths", async () => {
+		const validate = await import("../src/validate.ts");
+		const node = await import("../src/node.ts");
+		expect(Object.keys(validate).sort()).toEqual(["createXsdValidator"]);
+		expect(Object.keys(node).sort()).toEqual(["loadSchemaFiles"]);
 	});
 
 	it("keeps schema data out of the root entry", () => {

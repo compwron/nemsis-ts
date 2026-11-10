@@ -18,6 +18,14 @@
 		"./3.5.1": {
 			"types": "./dist/3.5.1.d.ts",
 			"import": "./dist/3.5.1.js"
+		},
+		"./validate": {
+			"types": "./dist/validate.d.ts",
+			"import": "./dist/validate.js"
+		},
+		"./node": {
+			"types": "./dist/node.d.ts",
+			"import": "./dist/node.js"
 		}
 	},
 	"main": "./dist/index.js",
@@ -65,6 +73,7 @@
 		"schematron"
 	],
 	"dependencies": {
-		"fast-xml-parser": "^5.11.2"
+		"fast-xml-parser": "^5.11.2",
+		"xmllint-wasm": "^5.3.0"
 	}
 }

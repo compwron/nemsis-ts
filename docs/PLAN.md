@@ -161,6 +161,10 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
   default build ships stubs (`bundled: false`, no files). Both variants have identical types, the repo
   never contains NEMSIS files, and CI checks both builds.
 
+- **Browser support (2026-11-09):** verified by `pnpm test:browser` (Vitest browser mode, headless Chromium
+  via Playwright). It loads the schema model and runs XSD validation on xmllint-wasm's browser build with the
+  real 3.5.1 XSDs, getting the same result as Node on the compliance cases. It runs in CI as its own job.
+
 ## 9. Upstream findings
 
 - **Stale EMS sample data (found 2026-11-09):** all 40 `SampleData/EMS/xml` files in both `3.5.0.251001CP6`
@@ -171,5 +175,4 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 
 ## 10. Open questions
 
-- **Browser check:** `xmllint-wasm` ships a browser build, but we haven't tested it in a browser yet
-  (planned: a Playwright or Vitest browser-mode smoke test).
+None right now.

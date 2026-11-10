@@ -1,8 +1,10 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
 	test: {
 		include: ["test/**/*.test.ts"],
+		// Browser smoke tests run separately: `pnpm test:browser` (vitest.browser.config.ts).
+		exclude: [...configDefaults.exclude, "test/browser/**"],
 		coverage: {
 			provider: "v8",
 			include: ["src/**/*.ts", "scripts/**/*.ts"],

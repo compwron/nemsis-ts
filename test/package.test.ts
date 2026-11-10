@@ -53,11 +53,19 @@ describe("package exports", () => {
 	});
 
 	it.each(SUPPORTED_VERSIONS.map((v) => [short(v), v]))(
-		"nemsis-ts/%s exports that version's schema",
+		"nemsis-ts/%s exports that version's schema and parse",
 		async (s, v) => {
-			const mod = (await import(`../src/${s}.ts`)) as {
+			const mod = (await import(`../src/${s}.ts`)) as Record<
+				string,
+				unknown
+			> & {
 				schema: { version: string };
 			};
+			expect(Object.keys(mod).sort()).toEqual([
+				"NemsisParseError",
+				"parse",
+				"schema",
+			]);
 			expect(mod.schema.version).toBe(v);
 		},
 	);

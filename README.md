@@ -93,12 +93,27 @@ See **[docs/PLAN.md](docs/PLAN.md)** for the full build plan (CI, TDD, milestone
   copy source from other implementations, including the GPL/AGPL projects above.
 - Test-first, driven by official NEMSIS compliance test cases, sample data and expected Schematron output.
 
+## Usage (early, API may change)
+
+```ts
+import { readFileSync } from "node:fs";
+import type { EMS } from "nemsis-ts/3.5.1"; // typed documents: EMS.PatientCareReport, codes.*, …
+import { schema } from "nemsis-ts/3.5.1"; // schema model: element tree, simple types, NEMSIS docs
+import { createXsdValidator } from "nemsis-ts/validate";
+import { loadSchemaFiles } from "nemsis-ts/node";
+
+// NEMSIS XSDs are not bundled: point at a NEMSIS release's XSDs/NEMSIS_XSDs directory.
+const validator = createXsdValidator(loadSchemaFiles("NEMSIS_XSDs"));
+const result = await validator.validate(readFileSync("ems.xml", "utf8"));
+// { valid: false, dataset: "EMSDataSet", errors: [{ line: 121, element: "eSituation", message: "…" }] }
+```
+
 ## Roadmap (tentative)
 
-- [ ] Project scaffolding (TypeScript, tests, CI)
-- [ ] XSD → TypeScript type generation for EMS / DEM / State
+- [x] Project scaffolding (TypeScript, tests, CI)
+- [x] XSD → schema model + TypeScript document types for EMS / DEM / State (3.5.0, 3.5.1)
 - [ ] NEMSIS XML parse + serialize with round-trip tests
-- [ ] XSD validation
+- [x] XSD validation
 - [ ] Schematron validation
 - [ ] NEMSIS value lists / code sets
 - [ ] X12 837P generation from an EMS record

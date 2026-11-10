@@ -151,3 +151,7 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 - **Schematron engine:** SaxonJS.
 - **Versions at 0.1:** 3.5.0 (`3.5.0.251001CP6`) and 3.5.1 (`3.5.1.251001CP2`). Every golden-test suite runs
   against each version's own fixtures.
+- **NEMSIS text in generated code (2026-11-09):** keep element definitions and code descriptions in the
+  generated schema and JSDoc. Raw NEMSIS files still aren't committed.
+- **Bundles (2026-11-09):** one subpath export per version (`nemsis-ts/3.5.0`, `nemsis-ts/3.5.1`). The root
+  entry has helpers and types only, and CI's `check:bundle` enforces a 20 KiB budget and no cross-version data.

@@ -10,6 +10,14 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
+		},
+		"./3.5.0": {
+			"types": "./dist/3.5.0.d.ts",
+			"import": "./dist/3.5.0.js"
+		},
+		"./3.5.1": {
+			"types": "./dist/3.5.1.d.ts",
+			"import": "./dist/3.5.1.js"
 		}
 	},
 	"main": "./dist/index.js",
@@ -28,7 +36,8 @@
 		"check:package": "publint && attw --pack . --profile esm-only",
 		"spec:fetch": "node scripts/fetch-spec.ts",
 		"codegen": "node scripts/codegen.ts",
-		"codegen:check": "node scripts/codegen.ts && git diff --exit-code --stat -- src/generated && test -z \"$(git ls-files --others --exclude-standard -- src/generated)\""
+		"codegen:check": "node scripts/codegen.ts && git diff --exit-code --stat -- src/generated && test -z \"$(git ls-files --others --exclude-standard -- src/generated)\"",
+		"check:bundle": "node scripts/check-bundle.ts"
 	},
 	"packageManager": "pnpm@10.34.9+sha512.f49b5a8ea0fdedb44bb3c0c1d6575092a53c2950d95b7ad15df11f17974877a2de3a01c07e934e9b28ce716e51c09a94962c7306d09be2e1e4b18a8c8762fd32",
 	"devDependencies": {

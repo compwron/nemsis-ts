@@ -44,6 +44,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test --coverage --reporter=default --reporter=junit --outputFile.junit=reports/junit.xml
       - run: pnpm build
+      - run: pnpm check:bundle
       - run: pnpm check:package
       - if: ${{ !cancelled() && matrix.node == 24 }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

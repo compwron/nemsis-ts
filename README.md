@@ -29,11 +29,11 @@ those pieces in one typed, tested, permissively licensed package.
 Covering all three data sets from the
 [v3.5 data dictionary](https://nemsis.org/media/nemsis_v3/release-3.5.0/DataDictionary/PDFHTML/EMSDEMSTATE/index.html):
 
-| Data set | What it holds |
-|---|---|
-| **EMS** (`EMSDataSet`) | One ePCR per patient contact: `eRecord`, `eTimes`, `eSituation`, `eVitals`, `eMedications`, `eProcedures`, `eDisposition`, `ePayment`, `eOutcome`, … |
-| **DEM** (`DEMDataSet`) | Agency setup: units, personnel, facilities, configuration |
-| **State** (`StateDataSet`) | State-level rules and custom value lists |
+| Data set                   | What it holds                                                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **EMS** (`EMSDataSet`)     | One ePCR per patient contact: `eRecord`, `eTimes`, `eSituation`, `eVitals`, `eMedications`, `eProcedures`, `eDisposition`, `ePayment`, `eOutcome`, … |
+| **DEM** (`DEMDataSet`)     | Agency setup: units, personnel, facilities, configuration                                                                                            |
+| **State** (`StateDataSet`) | State-level rules and custom value lists                                                                                                             |
 
 Planned features:
 
@@ -83,7 +83,7 @@ which lines up with NEMSIS v3.
 See **[docs/PLAN.md](docs/PLAN.md)** for the full build plan (CI, TDD, milestones).
 
 - The definitive definitions are the XSDs, national Schematron and WSDL from NEMSIS TAC's git repo
-  (`https://git.nemsis.org/scm/nep/nemsis_public.git`), pinned to release tag `3.5.1.251001CP2`.
+  (`https://git.nemsis.org/scm/nep/nemsis_public.git`), pinned to release tags `3.5.0.251001CP6` and `3.5.1.251001CP2`.
   They're fetched and checksum-verified at build time, not committed.
 - Generate types from those XSDs with our own generator (spiking `cxsd` first), then layer
   hand-written ergonomics on top.
@@ -111,7 +111,7 @@ Ideas, use cases and pointers to prior art are welcome. Please open an issue.
 
 ## License
 
-To be decided (intended to be permissive, e.g. MIT or Apache-2.0).
+[Apache-2.0](LICENSE).
 
 ## References
 

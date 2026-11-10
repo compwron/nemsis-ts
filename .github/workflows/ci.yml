@@ -46,6 +46,11 @@ jobs:
       - run: pnpm build
       - run: pnpm check:bundle
       - run: pnpm check:package
+      - name: Build and check with bundled XSDs (NEMSIS_BUNDLE_XSD)
+        if: ${{ matrix.node == 24 }}
+        env:
+          NEMSIS_BUNDLE_XSD: "1"
+        run: pnpm build:with-xsd && pnpm check:bundle
       - if: ${{ !cancelled() && matrix.node == 24 }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

@@ -16,11 +16,14 @@ const pkg = JSON.parse(
 const short = (v: string) => v.split(".").slice(0, 3).join(".");
 
 describe("package exports", () => {
-	it("has a subpath export per supported version plus validate and node", () => {
+	it("has subpath exports per supported version (+ /xsd) plus validate and node", () => {
 		const subpaths = Object.keys(pkg.exports).filter((k) => k !== ".");
 		expect(subpaths.sort()).toEqual(
 			[
-				...SUPPORTED_VERSIONS.map((v) => `./${short(v)}`),
+				...SUPPORTED_VERSIONS.flatMap((v) => [
+					`./${short(v)}`,
+					`./${short(v)}/xsd`,
+				]),
 				"./node",
 				"./validate",
 			].sort(),
@@ -56,6 +59,26 @@ describe("package exports", () => {
 				schema: { version: string };
 			};
 			expect(mod.schema.version).toBe(v);
+		},
+	);
+});
+
+describe("optional bundled XSDs", () => {
+	it.each(SUPPORTED_VERSIONS.map(short))(
+		"nemsis-ts/%s/xsd is declared and a stub in source",
+		async (s) => {
+			expect(pkg.exports[`./${s}/xsd`]).toEqual({
+				types: `./dist/${s}/xsd.d.ts`,
+				import: `./dist/${s}/xsd.js`,
+			});
+			const mod = (await import(
+				`../src/xsd/v${s.replaceAll(".", "_")}.ts`
+			)) as {
+				bundled: boolean;
+				schemaFiles: unknown[];
+			};
+			expect(mod.bundled).toBe(false);
+			expect(mod.schemaFiles).toEqual([]);
 		},
 	);
 });

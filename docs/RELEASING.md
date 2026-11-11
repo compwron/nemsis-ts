@@ -14,9 +14,10 @@ once that decision is made. Until then three locks keep a release from happening
 - [ ] **Go public?** npm provenance (a signed link from the package to this repo's workflow run) only works
   for public repositories, and it is the main reason to publish from CI. Public repositories also get free
   GitHub Actions minutes; private ones are metered.
-- [ ] **Package name.** The name in `package.json` is a working name. Check it is free on npm and that the
-  maintainers want it (`npm view <name>` is a public lookup; it was deliberately not run while the
-  project is private). Consider a scope (`@org/name`) if the name is taken or if NEMSIS TAC asks for
+- [ ] **Package name.** `nemsis-ts` was unclaimed on npm when checked on 2026-11-11 (the registry answered
+  404). A name is only yours once published, and npm also refuses names too similar to existing ones, so
+  re-check right before the first publish (`npm view nemsis-ts`) and confirm the maintainers still want it.
+  Consider a scope (`@org/name`) if the name is taken or if NEMSIS TAC asks for
   distance from the official brand. A scoped package needs `--access public` (already in the workflow).
 - [ ] **NEMSIS relationship.** The library is independent and clean-room. Confirm with NEMSIS TAC that the
   README/package description names NEMSIS acceptably, and that keeping NEMSIS documentation text in the

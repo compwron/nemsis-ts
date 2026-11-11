@@ -2,11 +2,24 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-11 — CI browser job: Chromium install failed on runner DNS
+
+- The browser job failed at `playwright install --with-deps` on the Milestone 8 prep commit, three reruns
+  in a row over ~30 min: `Temporary failure resolving 'archive.ubuntu.com'` (and the other Ubuntu mirrors),
+  then apt exit 100. Node jobs were fine. The same image (`ubuntu-26.04`) had passed the job hours earlier;
+  githubstatus.com showed no incident; the mirrors resolved instantly from the dev machine. So: the
+  runner's DNS, not our code.
+- A retry loop with `Acquire::Retries 5` made it worse (each attempt took ~10 min, and the 15 min job limit
+  cancelled the job). Replaced by `playwright install chromium` without `--with-deps`: the runner image
+  already has Chrome's libraries, and the job passed. If a future image lacks a library, the browser test
+  step fails with the missing-library error; then reinstate `--with-deps` (maybe with a container).
+- `npm view nemsis-ts` (run at the maintainer's request): 404, name unclaimed on 2026-11-11.
+
 ## 2026-11-11 — Milestone 8 preparation (no publishing)
 
-- Not run on purpose: `npm view nemsis-ts` (name availability). The repo is private and the maintainers are
-  waiting on external discussions; looking the name up would send the intended name to a third party. It is
-  a checklist item in `docs/RELEASING.md` instead.
+- Initially not run: `npm view nemsis-ts` (repo private, maintainers waiting on external discussions, so I
+  did not send the intended name to a third party unasked). Run later at the maintainer's request: see the
+  CI entry above.
 - `pnpm pack --dry-run`: tarball is `dist/`, `LICENSE`, `README.md`, `package.json` only (no `.spec`, tests
   or generated sources).
 - Added: README examples type-checked by a test (mutation-checked with a bad property and a misspelled

@@ -85,5 +85,14 @@ jobs:
       - name: Fetch and verify NEMSIS spec artifacts
         run: pnpm spec:fetch
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        # The runner's DNS for Ubuntu's package mirrors is occasionally unavailable for a while
+        # ("Temporary failure resolving ..."), which fails apt inside `--with-deps`; retry with a pause.
+        run: |
+          echo 'Acquire::Retries "5";' | sudo tee /etc/apt/apt.conf.d/80-retries >/dev/null
+          for attempt in 1 2 3 4; do
+            if pnpm exec playwright install --with-deps chromium; then exit 0; fi
+            echo "Chromium install failed (attempt $attempt); retrying in 60s"
+            sleep 60
+          done
+          exit 1
       - run: pnpm test:browser

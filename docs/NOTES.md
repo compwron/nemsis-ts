@@ -2,6 +2,14 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-11 — fast-xml-parser: runtime → dev dependency, 5.12.0
+
+- Dependabot #4 bumped `fast-xml-parser` 5.11.2 → 5.12.0 (minor; fixes only, no new transitive packages).
+  Its CI was red only because its branch predated the tag re-pin below.
+- It was listed under `dependencies` but nothing shipped uses it (since parsing moved to `saxes`): only
+  `scripts/codegen/xsd.ts` and the tests (as the independent oracle). Moved to `devDependencies` at 5.12.0,
+  which supersedes #4.
+
 ## 2026-11-11 — Upstream moved the pinned release tags
 
 - CI on the Node 26 commit failed at `spec:fetch`: tag `3.5.0.251001CP6` now resolves to `127d820…`

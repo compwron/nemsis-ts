@@ -2,13 +2,25 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-10 — Dev Node 24 → 26
+
+- Node release data (nodejs.org): 26 "Lithium" is Active LTS since 2026-10-28 (ends 2029-04-30); 24 and 22
+  are Maintenance LTS (end 2028-04-30 and 2027-04-30); 20 is end of life.
+- Dev Node is now 26.13.0 (`.tool-versions`), `@types/node` ^26, CI's single-version steps (bundled-XSD
+  build, report upload, browser job) run on 26. `engines` stays `>=22` and the matrix stays 22/24/26, so
+  the Node 22 job guards the floor. Raise the floor to 24 when Node 22 ends (2027-04-30).
+- The dependabot ignore for major `@types/node` is removed again.
+- Node 26 no longer ships corepack: locally run `npm install -g corepack` (then `asdf reshim nodejs`) to
+  keep using `corepack pnpm`. CI uses pnpm/action-setup and is unaffected.
+- Full suite, browser tests, build, bundle and package checks all pass on Node 26.13.0 locally.
+
 ## 2026-11-10 — Dependabot PRs
 
 - #2 `actions/cache` 5.1.0 → 6.1.0: pin 55cc834… verified against the upstream `v6.1.0` tag; release only
   bumps its internal `@actions/cache`. Applied directly to `main` because the `gh` token lacks the
   `workflow` scope (it cannot merge PRs that touch workflow files); PR closed by dependabot.
-- #1 `@types/node` 24 → 26: not applied. Typings should track the dev Node (24, engines >=22). Added a
-  dependabot `ignore` for major `@types/node` updates; PR closed.
+- #1 `@types/node` 24 → 26: first held back (typings should track the dev Node), then applied by hand when
+  the dev Node moved to 26 (see above); the temporary dependabot `ignore` was removed.
 - #3 `tsdown` 0.23.4 → 0.23.5: held. Its lockfile swaps transitive `@yuku-core/*@0.19.0` for
   `@yuku-toolchain/*@0.25.0`, published 2026-11-10 — inside our 7-day `minimumReleaseAge`
   (dependabot's cooldown only covers the direct package). Revisit on or after 2026-11-17.

@@ -136,6 +136,8 @@ const report = await rules.validate(xml);
 // { valid: false, issues: [{ id: "nemSch_e002", severity: "error", location: "/*:EMSDataSet…", text: "…" }], svrl }
 ```
 
+Status: pre-release, not yet published to npm. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
+
 ## Roadmap (tentative)
 
 - [x] Project scaffolding (TypeScript, tests, CI)

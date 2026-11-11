@@ -2,6 +2,20 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-11 — Milestone 8 preparation (no publishing)
+
+- Not run on purpose: `npm view nemsis-ts` (name availability). The repo is private and the maintainers are
+  waiting on external discussions; looking the name up would send the intended name to a third party. It is
+  a checklist item in `docs/RELEASING.md` instead.
+- `pnpm pack --dry-run`: tarball is `dist/`, `LICENSE`, `README.md`, `package.json` only (no `.spec`, tests
+  or generated sources).
+- Added: README examples type-checked by a test (mutation-checked with a bad property and a misspelled
+  import path), `CHANGELOG.md`, `release.yml` (manual only; skipped unless `RELEASE_ENABLED=true`; refuses
+  while `private` or version `0.0.0`; uses OIDC trusted publishing + `--provenance`; actions SHA-pinned as in
+  CI), `docs/RELEASING.md`, and `"private": true` in `package.json` as the safety lock.
+- Provenance needs a public repo; the dry-run path (`npm publish --dry-run`) is the only part exercised in CI
+  once enabled. Not tested here: the workflow itself has never run.
+
 ## 2026-11-11 — fast-xml-parser: runtime → dev dependency, 5.12.0
 
 - Dependabot #4 bumped `fast-xml-parser` 5.11.2 → 5.12.0 (minor; fixes only, no new transitive packages).

@@ -9,6 +9,11 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    ignore:
+      # Keep the Node typings on the Node we develop against (.tool-versions, engines >=22), so
+      # tsc cannot approve APIs that only exist in a newer Node. Bump by hand with .tool-versions.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -2,6 +2,17 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-10 — Dependabot PRs
+
+- #2 `actions/cache` 5.1.0 → 6.1.0: pin 55cc834… verified against the upstream `v6.1.0` tag; release only
+  bumps its internal `@actions/cache`. Applied directly to `main` because the `gh` token lacks the
+  `workflow` scope (it cannot merge PRs that touch workflow files); PR closed by dependabot.
+- #1 `@types/node` 24 → 26: not applied. Typings should track the dev Node (24, engines >=22). Added a
+  dependabot `ignore` for major `@types/node` updates; PR closed.
+- #3 `tsdown` 0.23.4 → 0.23.5: held. Its lockfile swaps transitive `@yuku-core/*@0.19.0` for
+  `@yuku-toolchain/*@0.25.0`, published 2026-11-10 — inside our 7-day `minimumReleaseAge`
+  (dependabot's cooldown only covers the direct package). Revisit on or after 2026-11-17.
+
 ## 2026-11-10 — Defined lists (Milestone 7)
 
 **Looked at**

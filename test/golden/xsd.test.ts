@@ -17,6 +17,14 @@ const files = (dir: string) =>
 		.sort()
 		.map((f) => [f, join(dir, f)] as const);
 
+/** The exact XSD errors (`line element`) NEMSIS's FailXsd cases are designed to produce. */
+const FAIL_XSD_ERRORS: Record<string, string[]> = {
+	"2025-DEM-FailXsd.xml": ["152 dConfiguration.02"],
+	"2025-EMS-FailXsd.xml": ["120 eSituation"],
+	"2026-DEM-FailXsd_v351.xml": ["1218 dPersonnel.10"],
+	"2026-EMS-FailXsd.xml": ["50 eResponse.16"],
+};
+
 for (const version of SUPPORTED_VERSIONS) {
 	const root = specRoot(version);
 	describe.skipIf(!root)(`XSD validation (${version})`, () => {
@@ -65,6 +73,9 @@ for (const version of SUPPORTED_VERSIONS) {
 					name.includes("-DEM-") ? "DEMDataSet" : "EMSDataSet",
 				);
 				expect(result.errors.length).toBeGreaterThan(0);
+				expect(result.errors.map((e) => `${e.line} ${e.element}`)).toEqual(
+					FAIL_XSD_ERRORS[name],
+				);
 				for (const e of result.errors) {
 					expect(e.line).toBeGreaterThan(0);
 					expect(e.element).toMatch(/^[A-Za-z]+(\.[A-Za-z0-9]+)?$/);

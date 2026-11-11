@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -177,13 +177,4 @@ describe.skipIf(!root)("compileSchematron (real ISO skeleton)", () => {
 			rmSync(dir, { recursive: true, force: true });
 		}
 	});
-});
-
-it("SEF cache files are JSON", () => {
-	if (!root) return;
-	expect(() =>
-		JSON.parse(
-			readFileSync(join(root, "compiled", "DEMDataSet.sef.json"), "utf8"),
-		),
-	).not.toThrow();
 });

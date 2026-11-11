@@ -2,6 +2,21 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-11 — Upstream moved the pinned release tags
+
+- CI on the Node 26 commit failed at `spec:fetch`: tag `3.5.0.251001CP6` now resolves to `127d820…`
+  (lock: `af3ea23…`). `git ls-remote` showed `3.5.1.251001CP2` also moved (`0735934…` vs `ef8dfef…`).
+  Not related to the Node change: the CI cache key changed (lockfile is in it), so CI refetched for the
+  first time since the tags moved.
+- Fetched both new commits to a temp dir and diffed against our manifests: 3.5.0 differs only in
+  `DefinedLists/DefinedListHtml.xsl`; 3.5.1 also swaps the 17 `2025-*` compliance cases for `2026-*` ones.
+  Codegen output differs only in the header comment (commit SHA), so XSDs and lists are unchanged.
+- Old commits were still fetchable by SHA (checked with a throwaway repo). Not relied upon.
+- Re-pinned the lock and manifests, regenerated, fixed tests that named the 2025 files, pinned the exact
+  FailXsd errors per file (3.5.0: 152 dConfiguration.02 / 120 eSituation; 3.5.1: 1218 dPersonnel.10 /
+  50 eResponse.16), made the bundle check find its sample by pattern. A parse-golden comparison that
+  depended on attribute order was fixed; a Schematron test that depended on a prior compile was removed.
+
 ## 2026-11-10 — Dev Node 24 → 26
 
 - Node release data (nodejs.org): 26 "Lithium" is Active LTS since 2026-10-28 (ends 2029-04-30); 24 and 22

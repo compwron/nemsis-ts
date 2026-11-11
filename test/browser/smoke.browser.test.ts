@@ -99,13 +99,15 @@ describe("in a browser", () => {
 
 			it("passes a national compliance case", async () => {
 				const result = await validator.validate(
-					file("national/2025-EMS-1-Overdose_v351.xml"),
+					file("national/2026-EMS-1-RespiratoryTransfer_v351.xml"),
 				);
 				expect(result.errors).toEqual([]);
 			});
 
 			it("parses a national compliance case into the typed document", () => {
-				const result = parse(file("national/2025-EMS-1-Overdose_v351.xml"));
+				const result = parse(
+					file("national/2026-EMS-1-RespiratoryTransfer_v351.xml"),
+				);
 				expect(result.issues).toEqual([]);
 				if (result.dataset !== "EMSDataSet") throw new Error(result.dataset);
 				expect(
@@ -114,7 +116,9 @@ describe("in a browser", () => {
 			});
 
 			it("round-trips a national compliance case and the output passes XSD", async () => {
-				const parsed = parse(file("national/2025-EMS-1-Overdose_v351.xml"));
+				const parsed = parse(
+					file("national/2026-EMS-1-RespiratoryTransfer_v351.xml"),
+				);
 				const out = serialize(parsed);
 				expect(parse(out).document).toEqual(parsed.document);
 				expect((await validator.validate(out)).errors).toEqual([]);
@@ -122,11 +126,11 @@ describe("in a browser", () => {
 
 			it("fails the FailXsd compliance case with the same error as in Node", async () => {
 				const result = await validator.validate(
-					file("fail/2025-EMS-FailXsd_v351.xml"),
+					file("fail/2026-EMS-FailXsd.xml"),
 				);
 				expect(result.valid).toBe(false);
 				expect(result.errors.map((e) => `${e.line} ${e.element}`)).toEqual([
-					"121 eSituation",
+					"50 eResponse.16",
 				]);
 			});
 		},

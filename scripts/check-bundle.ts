@@ -4,7 +4,7 @@
  * - `<version>/xsd` is an empty stub by default, or the verified XSDs when bundling, in which
  *   case the bundled XSDs alone must validate an official compliance case
  */
-import { readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { REPO_ROOT, readLock, SPEC_DIR } from "./lib/spec.ts";
@@ -87,7 +87,11 @@ for (const v of versions) {
 				"xml",
 				"national",
 			);
-			const file = `2025-EMS-1-Overdose_v${s.replaceAll(".", "")}.xml`;
+			// The first national EMS case (its name changes with each year's compliance refresh).
+			const file =
+				readdirSync(sample)
+					.sort()
+					.find((f) => f.includes("-EMS-1-")) ?? "";
 			const result = await createXsdValidator(xsd.schemaFiles).validate(
 				readFileSync(join(sample, file), "utf8"),
 			);

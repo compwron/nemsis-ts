@@ -51,7 +51,9 @@ for (const version of SUPPORTED_VERSIONS) {
 			if (name.includes("FailXsd")) {
 				// Intentionally schema-invalid: anything the parser could not place must be explained
 				// by an unknown-element / too-many issue, and nothing may be invented.
-				const key = (e: (typeof expected)[number]) => JSON.stringify(e);
+				// Attribute order differs (schema order vs document order), so compare it sorted.
+				const key = (e: (typeof expected)[number]) =>
+					JSON.stringify({ ...e, attrs: Object.entries(e.attrs).sort() });
 				const seen = new Set(expected.map(key));
 				expect(actual.filter((e) => !seen.has(key(e)))).toEqual([]);
 				const kept = new Set(actual.map(key));

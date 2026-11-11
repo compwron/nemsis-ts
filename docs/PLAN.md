@@ -10,8 +10,7 @@ The canonical source is NEMSIS TAC's public git repository, not the website zips
 - **Repo:** `https://git.nemsis.org/scm/nep/nemsis_public.git` (Bitbucket, anonymous clone works)
 - **Release tags:** every published version is tagged, e.g. `3.5.1.251001CP2`, `3.5.0.251001CP6`.
   The default branch is in-progress work (it moved today) and **must not** be built against.
-- **Target versions:** both `3.5.1.251001CP2` (tag commit `ef8dfefbb0481eeb1715880b8c806d50f21e1c28`,
-  2025-10-08, the newest 3.5.1 release) and `3.5.0.251001CP6` (the newest 3.5.0 release). Generated code
+- **Target versions:** both `3.5.1.251001CP2` (tag commit `07359345ee018fc18226117c56b281c3aaab9f48`, the newest 3.5.1 release) and `3.5.0.251001CP6` (tag commit `127d8207007bf677bcfa71dce40f773dbebb1a74`, the newest 3.5.0 release). Generated code
   lives per version. v3.5.2 is scoped but not released yet
   ([timeline](https://nemsis.org/wp-content/uploads/2026/10/NEMSIS-v3.5.2-Timeline.pdf)).
 - **Cross-check against the website:** the
@@ -193,6 +192,17 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 - **Defined lists are suggestions, not enumerations:** codes such as ICD-10 symptoms are open vocabularies,
   so a code outside the list is not an error. `nemsis-ts` offers lookups only and does not validate against
   them.
+
+- **Release tags are not immutable (found 2026-11-11):** `3.5.0.251001CP6` and `3.5.1.251001CP2` were
+  moved to new commits after we pinned them (`af3ea23…` → `127d820…`, `ef8dfef…` → `0735934…`). Our commit
+  check caught it: CI failed at `spec:fetch` as designed. Comparing file hashes, everything we generate from
+  (XSDs, Schematron, defined lists, sample data) is byte-identical; only `DefinedLists/DefinedListHtml.xsl`
+  changed in both, and in 3.5.1 the 17 compliance cases were replaced by 2026 ones
+  (`2026-EMS-1-RespiratoryTransfer_v351.xml` etc., with different `FailXsd` errors). We re-pinned to the new
+  commits. The old commits were still fetchable by SHA at that time, but unreachable commits can be
+  garbage-collected, so we do not rely on that. Lesson: a release tag is a moving name; the lock (commit +
+  per-file hashes) is what makes builds reproducible, and a mismatch needs a human look, not an auto-update.
+  Worth asking NEMSIS TAC whether re-tagging is intended and how consumers should pin.
 
 ## 10. Open questions
 

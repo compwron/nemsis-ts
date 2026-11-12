@@ -1,6 +1,6 @@
 # FHIR mapping (proposal, not agreed)
 
-Status: **draft for owner review. No code exists and none should be written until this is agreed.**
+Status: **draft; scope decisions recorded 2026-11-12, mapping table still needs review. No code exists and none should be written until this is agreed.**
 Written 2026-11-12.
 
 ## What the upstream guide actually gives us
@@ -25,8 +25,8 @@ aligned to the mPSC document shape (a `Bundle` of type `document` led by a `Comp
 
 ## Proposed scope (for discussion)
 
-A one-way, lossy-by-design export `NEMSIS PCR -> FHIR R4 Bundle (document)`, new entry `nemsis-ts/fhir`.
-Reverse direction (FHIR to NEMSIS) is out of scope: NEMSIS has many mandatory elements FHIR data will not carry.
+A two-way mapping, lossy in places: `NEMSIS PCR -> FHIR R4 Bundle (document)`, new entry `nemsis-ts/fhir`.
+Owner wants both directions (see decisions below). FHIR to NEMSIS is harder: NEMSIS has many mandatory elements FHIR data will not carry.
 
 Proposed section-level mapping (my proposal; none of it is from the IG except the rows marked IG):
 
@@ -47,16 +47,50 @@ Proposed section-level mapping (my proposal; none of it is from the IG except th
 | eOutcome (IG: deferred to QORE)     | out of scope until the QORE profile is available                                   |
 | eCustomConfiguration (IG)           | `Observation` per the IG; needs a closer look                                      |
 
-## Open questions for the owner
+## Owner decisions (2026-11-12)
 
-1. Is a one-way export enough, or is FHIR-to-NEMSIS also wanted?
-2. Which terminologies? NEMSIS defined lists use ICD-10, SNOMED, RxNorm, LOINC in places, and NEMSIS-specific
-   codes elsewhere; the latter need a stable `CodeSystem` URL (ours? NEMSIS's? none is published to my knowledge).
-3. Which realm: international mPSC `Composition` only, or also US Core profiles?
-4. Validation: depend on the HL7 validator (Java, out of band) for our tests, or hand-written structural checks only?
-5. Should we ask IHE PCC whether the NEMSIS mapping is being actively worked on, to avoid diverging from it?
-   (This sends nothing project-specific; it needs the owner's go-ahead anyway.)
-6. Priority versus the X12 work, which is blocked on the guides.
+1. **Both directions** (NEMSIS to FHIR and FHIR to NEMSIS). The reverse direction needs a policy for NEMSIS
+   mandatory elements FHIR data lacks: emit NEMSIS null flavors (`NV`/`PN`, e.g. "Not Recorded") and report
+   what was defaulted. To be designed in the mapping, not assumed.
+2. **Terminology:** research, see below.
+3. **Realm:** both international mPSC `Composition` and US Core profiles.
+4. **Validation:** owner unsure; pros and cons below.
+5. **IHE contact:** not needed (the mapping is being worked on, slowly). Do not ask.
+6. Priority versus X12: unchanged; X12 is blocked on the guides, so FHIR goes first.
+
+## Q2 research: code systems
+
+Searched 2026-11-12 for a published NEMSIS FHIR `CodeSystem`/canonical URL: **none found** (not verified
+exhaustively; the search tool is shallow). What our own pinned defined lists reference (counted in
+`src/generated`): ICD-10-CM (most common), SNOMED CT, RxNorm, GNIS (place codes); others are NEMSIS-only lists.
+
+Proposal:
+- Standard-backed lists map to the standard FHIR system URIs: ICD-10-CM `http://hl7.org/fhir/sid/icd-10-cm`,
+  SNOMED CT `http://snomed.info/sct`, RxNorm `http://www.nlm.nih.gov/research/umls/rxnorm`, LOINC
+  `http://loinc.org`. (These are well-known HL7 URIs from memory; confirm each against the FHIR terminology
+  registry before coding.) GNIS has no HL7 URI I know of.
+- NEMSIS-only lists need a URI. Options: (a) `https://nemsis.org/...` per list: it is NEMSIS's namespace and is not
+  ours to mint, so only with their blessing; (b) a URI under our own control, which is wrong if we do not
+  own a domain; (c) `urn:oid:` / `urn:` scheme: stable and ownerless but opaque. **Recommendation:** make the
+  base URI a configurable option, default to a clearly provisional `urn:nemsis-ts:...`-style value, and ask
+  NEMSIS TAC (we are already preparing questions for them) whether they intend a canonical URL. Do not
+  squat on `nemsis.org`.
+- Round-trip needs the code system for each element recorded in the mapping table, generated from the defined
+  lists, so the reverse direction can map `Coding` back to the right element.
+
+## Q4: how to validate generated FHIR
+
+| Option                                         | Pros                                                                           | Cons                                                                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| HL7 Java validator (`validator_cli.jar`) in CI | Authoritative; checks profiles, invariants, terminology; what implementers use | Needs Java and downloads the jar + IG packages in CI (network, slow, supply-chain surface); not usable in browsers; our "no heavy runtime deps" stance |
+| Pure-JS validators (npm)                       | No Java, fast                                                                  | Search found small/young packages with unclear R4 profile coverage (unverified); weaker than the real thing                                            |
+| Hand-written structural checks only            | Zero deps, fast, runs in the browser, deterministic                            | Only catches what we think to check; no profile or terminology validation; risk of passing in tests but failing real validators                        |
+| FHIR JSON Schema from the spec                 | Cheap structural check, no Java                                                | Does not cover profiles, invariants or terminology                                                                                                     |
+
+**Recommendation:** hybrid. Library ships with no validator dependency. Tests use hand-written structural checks
+plus the official FHIR JSON Schema on every run, and a separate, optional (non-gating at first) CI job or
+local script runs the HL7 Java validator against golden outputs built from NEMSIS sample files. Promote the
+Java job to gating once it is stable. This matches how we treat Saxon (optional, never bundled).
 
 ## Not verified
 

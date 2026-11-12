@@ -141,7 +141,7 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
 | 6     | **Done:** Schematron via SaxonJS (optional peers `saxon-js`/`xslt3`). `compileSchematron` (`nemsis-ts/node`) runs the official ISO XSLT2 skeleton → SEF; `createSchematronValidator` (`nemsis-ts/schematron`) returns typed SVRL issues                 | All 250 `SampleData/Schematron` cases per version match the expected SVRL exactly. `FailSchematron` fails, `full`/`national` have no errors |
 | 7     | **Done:** the six defined lists generated per version (`nemsis-ts/<version>/lists`: `definedLists.list/listsForElement/lookup/find`). XSD enum docs were already in the schema model                                                                    | XML ≡ NEMSIS JSON ≡ CSV for every list; each list's elements and types exist in the schema and every code satisfies its type's facets       |
 | 8     | **Prepared, not published** (waiting on going public): README examples type-checked under test, `CHANGELOG.md`, `release.yml` (manual, off unless `RELEASE_ENABLED`, OIDC provenance), `docs/RELEASING.md` checklist, `"private": true` lock            | `attw`/`publint` clean. Docs examples compile under test                                                                                    |
-| later | 3.5.2 when released, WSDL client, X12 837P/835, FHIR mPSC                                                                                                                                                                                               | n/a                                                                                                                                         |
+| later | **WSDL client done** (`nemsis-ts/ws`; see §9 for what it was and was not tested against). 3.5.2 when released, X12 837P/835, FHIR mPSC                                                                                                                  | n/a                                                                                                                                         |
 
 ## 8. Decisions (2026-11-09)
 
@@ -203,6 +203,17 @@ Write tests first from **official fixtures**, so "done" is defined by NEMSIS, no
   garbage-collected, so we do not rely on that. Lesson: a release tag is a moving name; the lock (commit +
   per-file hashes) is what makes builds reproducible, and a mismatch needs a human look, not an auto-update.
   Worth asking NEMSIS TAC whether re-tagging is intended and how consumers should pin.
+
+- **Web-service client: what is and is not verified (2026-11-12):** `nemsis-ts/ws` follows
+  `WSDL/NEMSIS_V3_core.wsdl` (identical in 3.5.0 and 3.5.1) and the V3 Web Services Guide (a PDF dated
+  2020-02-27 in the 3.5.1 tag only; the guide says the WSDL wins on any discrepancy). Checked: the status-code
+  table equals the WSDL's enumerations word for word; every request we build (with all national compliance
+  documents as payload) and every response fixture validates against the schema embedded in the WSDL.
+  **Not checked:** any live server. We have no account on a state repository or the NEMSIS validator, so
+  real-world behaviour (exact `schemaVersion` string, SOAP headers, response quirks, size limits) is
+  unverified. The guide's example uses `3.5.0` for `schemaVersion`, so `3.5.1` is our assumption for 3.5.1
+  data. Next step when an account exists: submit the compliance cases and the two `FailSchematron` /
+  `FailXsd` cases and compare the server's report with ours.
 
 ## 10. Open questions
 

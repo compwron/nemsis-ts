@@ -16,7 +16,7 @@ const pkg = JSON.parse(
 const short = (v: string) => v.split(".").slice(0, 3).join(".");
 
 describe("package exports", () => {
-	it("has subpath exports per supported version (+ /xsd) plus validate, schematron and node", () => {
+	it("has subpath exports per supported version (+ /xsd) plus validate, schematron, ws and node", () => {
 		const subpaths = Object.keys(pkg.exports).filter((k) => k !== ".");
 		expect(subpaths.sort()).toEqual(
 			[
@@ -28,6 +28,7 @@ describe("package exports", () => {
 				"./node",
 				"./schematron",
 				"./validate",
+				"./ws",
 			].sort(),
 		);
 		for (const s of [
@@ -46,7 +47,27 @@ describe("package exports", () => {
 	it("exposes the validators and Node helpers on their own subpaths", async () => {
 		const validate = await import("../src/validate.ts");
 		const schematron = await import("../src/schematron.ts");
+		const ws = await import("../src/ws.ts");
 		const node = await import("../src/node.ts");
+		expect(Object.keys(ws).sort()).toEqual([
+			"DATA_SCHEMA",
+			"NemsisWsError",
+			"NemsisWsFaultError",
+			"NemsisWsHttpError",
+			"NemsisWsRequestError",
+			"NemsisWsResponseError",
+			"NemsisWsTimeoutError",
+			"WS_NS",
+			"WS_STATUS_CODES",
+			"createNemsisWsClient",
+			"parseQueryLimitResponse",
+			"parseRetrieveStatusResponse",
+			"parseSubmitDataResponse",
+			"queryLimitRequest",
+			"retrieveStatusRequest",
+			"submitDataRequest",
+			"wsStatus",
+		]);
 		expect(Object.keys(validate).sort()).toEqual(["createXsdValidator"]);
 		expect(Object.keys(schematron).sort()).toEqual([
 			"SCHEMATRON_PATCHES",

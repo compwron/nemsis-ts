@@ -28,6 +28,10 @@
 			"types": "./dist/schematron.d.ts",
 			"import": "./dist/schematron.js"
 		},
+		"./ws": {
+			"types": "./dist/ws.d.ts",
+			"import": "./dist/ws.js"
+		},
 		"./node": {
 			"types": "./dist/node.d.ts",
 			"import": "./dist/node.js"

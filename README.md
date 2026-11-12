@@ -134,6 +134,20 @@ const sef = await compileSchematron({
 const rules = createSchematronValidator(sef);
 const report = await rules.validate(xml);
 // { valid: false, issues: [{ id: "nemSch_e002", severity: "error", location: "/*:EMSDataSet…", text: "…" }], svrl }
+
+// Submit to a state repository (or NEMSIS's validator) over the NEMSIS web services (SOAP over HTTPS).
+import { createNemsisWsClient } from "nemsis-ts/ws";
+
+const ws = createNemsisWsClient({
+	endpoint: "https://validator.nemsis.org/",
+	username: "emonster",
+	password: "…",
+	organization: "ElmoAgency",
+});
+const outcome = await ws.submitAndWait({ xml, schemaVersion: "3.5.1" }); // polls while the server is busy
+outcome.status.kind; // "success" | "partial" | "pending" | "error"
+outcome.status.description; // "Successful import of a file, with [WARNING] level Schematron rule violation reported"
+outcome.report?.xmlValidation?.errors; // element-level XSD errors; report.schematronReports holds SVRL
 ```
 
 Status: pre-release, not yet published to npm. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
@@ -147,6 +161,7 @@ Status: pre-release, not yet published to npm. See the [changelog](CHANGELOG.md)
 - [x] XSD validation
 - [x] Schematron validation
 - [x] NEMSIS defined lists / code sets
+- [x] NEMSIS web-service (SOAP) client: SubmitData, RetrieveStatus, QueryLimit
 - [ ] X12 837P generation from an EMS record
 - [ ] X12 835 parsing
 - [ ] NEMSIS → FHIR (IHE mPSC) mapping

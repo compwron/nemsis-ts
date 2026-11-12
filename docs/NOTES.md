@@ -2,6 +2,27 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-12 — Web-service (SOAP) client, `nemsis-ts/ws`
+
+**Looked at**
+- `WSDL/NEMSIS_V3_core.wsdl` (same bytes in both tags): operations SubmitData / RetrieveStatus / QueryLimit,
+  SOAP 1.1 document/literal, namespace `http://ws.nemsis.org/`, `soapAction=http://ws.nemsis.org/<op>`,
+  default address `https://validator.nemsis.org/`. Credentials (username 1-100, password 1-250,
+  organization 1-100 chars) travel in the request body; `additionalInfo` is required in SubmitData and
+  RetrieveStatus requests.
+- `NEMSIS_v3_WebServices.pdf` (3.5.1 tag only; 3.5.0 has none). No PDF tools here, so I extracted its text by
+  inflating the PDF streams with a short Python script (scratch, not committed). Useful facts: HTTPS
+  required (TLS 1.2 must, 1.3 should); sample `schemaVersion` is `3.5.0`; sample requests/responses; async
+  flow (status 0 + handle, then RetrieveStatus); the national registry keeps results ~6 months; WS-Security
+  headers are allowed but unspecified.
+- Not run: any live server (no account). Nothing was sent anywhere.
+
+**Decisions:** only `fetch` + `saxes` (no SOAP library). HTTPS only (HTTP for localhost or explicit opt-in);
+`redirect: "error"` because credentials are in the POST body; no credential ever in an error message or
+snippet; fetch injectable for tests/proxies. Status table hand-written, cross-checked against the WSDL by a
+golden test. Responses are parsed leniently (an absent `xmlValidationErrorReport` is accepted; the WSDL
+requires it) because real servers vary; requests are strict.
+
 ## 2026-11-11 — CI browser job: Chromium install failed on runner DNS
 
 - The browser job failed at `playwright install --with-deps` on the Milestone 8 prep commit, three reruns

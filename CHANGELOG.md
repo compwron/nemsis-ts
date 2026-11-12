@@ -26,6 +26,11 @@ First public release candidate (`0.1.0`). Supports NEMSIS **3.5.0** (`3.5.0.2510
   `saxon-js` and `xslt3` are optional peer dependencies (Saxonica's license; never bundled).
 - **Defined lists:** `nemsis-ts/3.5.x/lists` with the six NEMSIS code lists and `list`, `listsForElement`,
   `lookup` and `find`.
+- **Web services:** `nemsis-ts/ws`, a client for the NEMSIS V3 web services (SOAP 1.1 over HTTPS):
+  `submitData`, `retrieveStatus`, `queryLimit`, and `waitForResult`/`submitAndWait` for servers that answer
+  asynchronously. Typed results include the status code's meaning from the WSDL, element-level XML
+  validation errors and the Schematron report (SVRL). HTTPS only (plain HTTP just for localhost), redirects
+  refused, credentials never in errors. Uses `fetch`, so it runs in Node and browsers.
 - Verified against NEMSIS's own artifacts: compliance cases, 110 sample files and 250 Schematron cases per
   version (see `docs/PLAN.md`). The artifacts are fetched at a pinned, hash-verified commit and never vendored.
 
@@ -34,4 +39,6 @@ First public release candidate (`0.1.0`). Supports NEMSIS **3.5.0** (`3.5.0.2510
 - XML comments and processing instructions are not preserved by `parse`.
 - Defined lists are suggestions, not enumerations; the library offers lookups, not validation against them.
 - Schematron runs on SaxonJS 2.7 with two small, documented workarounds (`src/schematron/patches.ts`).
-- Not yet implemented: X12 837P/835, FHIR (IHE mPSC), the NEMSIS WSDL client, NEMSIS 3.5.2.
+- The web-service client is tested against fixtures and the WSDL's own schema, not yet against a live server
+  (no test account); `schemaVersion` follows the guide's example (`3.5.0`), and state servers may differ.
+- Not yet implemented: X12 837P/835, FHIR (IHE mPSC), NEMSIS 3.5.2.

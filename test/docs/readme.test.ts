@@ -28,6 +28,7 @@ const SOURCE: Record<string, string> = {
 	"./3.5.1/xsd": "src/xsd/v3_5_1.ts",
 	"./validate": "src/validate.ts",
 	"./schematron": "src/schematron.ts",
+	"./ws": "src/ws.ts",
 	"./node": "src/node.ts",
 };
 

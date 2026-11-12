@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { parse, schema, serialize } from "../../src/3.5.1.ts";
 import { definedLists } from "../../src/lists/v3_5_1.ts";
 import { createXsdValidator } from "../../src/validate.ts";
+import { createNemsisWsClient } from "../../src/ws.ts";
 
 const NS = `xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.nemsis.org" targetNamespace="http://www.nemsis.org" elementFormDefault="qualified"`;
 
@@ -59,6 +60,34 @@ describe("in a browser", () => {
 		expect(
 			definedLists.find("eMedications.03", "161", "9924003")?.code.sourceLabel,
 		).toBe("acetaminophen");
+	});
+
+	it("talks to a NEMSIS web service through fetch (SOAP, no Node APIs)", async () => {
+		const seen: { action: string | undefined; redirect: string | undefined }[] =
+			[];
+		const fake = (async (_url: string | URL | Request, init?: RequestInit) => {
+			seen.push({
+				action: ((init?.headers ?? {}) as Record<string, string>).SOAPAction,
+				redirect: init?.redirect,
+			});
+			return new Response(
+				`<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><QueryLimitResponse xmlns="http://ws.nemsis.org/"><requestType>QueryLimit</requestType><limit>5120</limit><statusCode>51</statusCode></QueryLimitResponse></S:Body></S:Envelope>`,
+			);
+		}) as typeof fetch;
+		const ws = createNemsisWsClient({
+			endpoint: "https://ws.example.org/",
+			username: "u",
+			password: "p",
+			organization: "o",
+			fetch: fake,
+		});
+		expect(await ws.queryLimit()).toMatchObject({
+			limitKb: 5120,
+			status: { kind: "success" },
+		});
+		expect(seen).toEqual([
+			{ action: '"http://ws.nemsis.org/QueryLimit"', redirect: "error" },
+		]);
 	});
 
 	it("validates against an inline schema", async () => {

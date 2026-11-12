@@ -2,6 +2,11 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-12 — Handoff file
+
+- Added `docs/HANDOFF.md` (state, working agreements, pitfalls, blockers, ordered next steps) and a memory
+  pointer to it, so a fresh session can pick up without the conversation history.
+
 ## 2026-11-12 — Web-service (SOAP) client, `nemsis-ts/ws`
 
 **Looked at**

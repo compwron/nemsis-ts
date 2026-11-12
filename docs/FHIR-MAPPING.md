@@ -184,6 +184,121 @@ C. Sensitive identifiers (SSN, driver license): omit by default, include only wi
 D. Per-value `Observation` or panels for vitals? Proposal as above: individual observations plus BP panel plus
 a group panel for reversibility.
 
+## Decisions on the first pass (owner, 2026-11-12, provisional)
+
+Questions A to D above are provisionally approved as proposed: `MedicationStatement` for medications given before
+arrival or by another unit; small crosswalks generated into the package (GNIS names stay out, city carried as a
+code extension unless the caller supplies a lookup); SSN and driver's license omitted unless an explicit option
+is set; vitals as individual Observations plus a blood-pressure panel and a group panel.
+
+## Per-element review, second pass (encounter shell, clinical context, payment)
+
+Same caveats as the first pass: names, types, cardinality and usage are from the generated 3.5.1 model; FHIR
+targets are from memory and need checking. Code lists named here (impressions, procedures) are SNOMED or ICD-10
+in NEMSIS, so they map to standard FHIR systems (see Q2).
+
+### Encounter shell: eRecord, eResponse, eDispatch, eTimes, eCrew to `Composition`, `Encounter`, `Organization`, `Practitioner`, `Location`
+
+| Element(s)                                                   | FHIR target                                                                                                                     | Note                                                                                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| eRecord.01 PCR number                                        | `Composition.identifier` and `Bundle.identifier`                                                                                | The natural document id.                                                                                         |
+| eRecord.02-.04 software creator, name, version               | `Composition.author` as a `Device`, or `Provenance.agent`                                                                       |                                                                                                                  |
+| eResponse.01/.02 agency number, name                         | `Organization.identifier`, `name` (same resource as `dAgency`)                                                                  | IG maps dAgency to `Organization`.                                                                               |
+| eResponse.03/.04 incident, response number                   | `Encounter.identifier` (two systems)                                                                                            |                                                                                                                  |
+| eResponse.05 service type, .06 standby purpose               | `Encounter.serviceType`, `reasonCode`                                                                                           |                                                                                                                  |
+| eResponse.07 unit capability, .13/.14 unit number, call sign | `Device` or `Location` (ambulance unit) via `Encounter.participant`/`location`                                                  | R4 has no vehicle resource; `Device` is the usual stand-in.                                                      |
+| eResponse.08-.12 delay types (1..*)                          | extension on `Encounter`                                                                                                        | No FHIR home.                                                                                                    |
+| eResponse.16-.18 dispatch location, GPS, USNG                | `Location` (`position` for GPS)                                                                                                 | USNG has no field; extension.                                                                                    |
+| eResponse.19-.22 odometer readings                           | extension on `Encounter`                                                                                                        | Also relevant to billing mileage.                                                                                |
+| eResponse.23/.24 response mode                               | extension                                                                                                                       |                                                                                                                  |
+| eDispatch.01-.06                                             | `Encounter.reasonCode` (.01); extensions for EMD, determinant, CAD ids; `Encounter.priority` (.05)                              | Determinant codes are proprietary systems.                                                                       |
+| eCrew.01-.03                                                 | `Practitioner` + `PractitionerRole` in `Encounter.participant` (type from .03, qualification from .02)                          | .01 is an agency-local id, as in eMedications.09.                                                                |
+| eTimes.01-.17 (17 timestamps)                                | `Encounter.period` (unit en route to back in service) plus a set of extensions, or one `Provenance`/`Observation` per milestone | Proposal: a single repeating `Encounter` extension `{milestone code, dateTime}`, keeping all 17 and their order. |
+
+### Clinical context: eSituation, eHistory to `Condition`, `Observation`, `AllergyIntolerance`, `Immunization`, `MedicationStatement`
+
+| Element(s)                                                            | FHIR target                                                                           | Note                                                       |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| eSituation.01 symptom onset                                           | `Condition.onsetDateTime` (on the primary complaint condition)                        |                                                            |
+| eSituation.02/.14 possible injury, work related                       | `Encounter.reasonCode` flag / `Observation`                                           |                                                            |
+| eSituation.03-.06 complaint, type, duration, units                    | `Condition` (`code`/text, `onset` or `abatement` duration, `category`)                | Free text plus units.                                      |
+| eSituation.07/.08 anatomic location, organ system                     | `Condition.bodySite`                                                                  |                                                            |
+| eSituation.09/.10 primary and other symptoms                          | `Condition` (symptoms) or `Observation`                                               |                                                            |
+| eSituation.11/.12 provider's primary and secondary impression         | `Encounter.diagnosis` (use = primary / secondary) referencing `Condition` (ICD-10-CM) | Core of the clinical summary.                              |
+| eSituation.13 initial acuity                                          | `Encounter.priority` or `Observation`                                                 |                                                            |
+| eSituation.15/.16 industry, occupation                                | `Observation` (occupation)                                                            | US Core has occupation profile in newer versions (verify). |
+| eSituation.17 patient activity (ICD-10 Y93)                           | `Condition`/`Observation`                                                             |                                                            |
+| eSituation.18 last known well                                         | `Observation`                                                                         | Stroke-relevant.                                           |
+| eSituation.19/.20 transfer justification, reason                      | `Encounter.reasonCode` / extension                                                    |                                                            |
+| eHistory.01 barriers to care                                          | `Observation` or `Encounter.extension`                                                |                                                            |
+| eHistory.02-.04 patient's practitioner                                | `Patient.generalPractitioner` (`Practitioner`)                                        |                                                            |
+| eHistory.05 advance directives                                        | `Consent` or `Observation`; US Core has none (verify)                                 |                                                            |
+| eHistory.06/.07 medication, environmental/food allergies              | `AllergyIntolerance` (RxNorm, SNOMED)                                                 |                                                            |
+| eHistory.08 medical/surgical history (ICD-10)                         | `Condition` (category history)                                                        |                                                            |
+| eHistory.09 history obtained from                                     | `Observation`/`Composition.section.text` provenance                                   |                                                            |
+| eHistory.10/.11 immunization type, year                               | `Immunization` (`occurrence[x]` as partial date)                                      | Type list is NEMSIS-specific.                              |
+| eHistory.12-.15, .20 current medication, dose, unit, route, frequency | `MedicationStatement`                                                                 | Same dose-unit crosswalk as eMedications.                  |
+| eHistory.16 emergency info form                                       | `Observation`/extension                                                               |                                                            |
+| eHistory.17 alcohol/drug use                                          | `Observation` (social history)                                                        |                                                            |
+| eHistory.18 pregnancy                                                 | `Observation` (pregnancy status)                                                      |                                                            |
+| eHistory.19 last oral intake                                          | `Observation`                                                                         |                                                            |
+
+### eProcedures to `Procedure`
+
+| Element                                                                | FHIR target                                        | Note                                                                           |
+| ---------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------ |
+| .01 time, .03 procedure (SNOMED)                                       | `performedDateTime`, `code`                        |                                                                                |
+| .02/.15 before arrival / by another unit                               | `status` plus `performer`, or `basedOn`/extension  | Same question as medications: another unit's work is a statement, not our act. |
+| .04 equipment size, .13 vascular access location, .14 airway technique | `focalDevice`, `bodySite`, extension               |                                                                                |
+| .05 attempts, .06 successful                                           | extension; `outcome`                               | Attempts have no field.                                                        |
+| .07 complication (1..*), .08 response                                  | `complication`; `followUp`/`note` or `Observation` |                                                                                |
+| .09/.10 crew id, role                                                  | `performer.actor`, `performer.function`            |                                                                                |
+| .11/.12 authorization                                                  | `Provenance`/extension                             |                                                                                |
+
+### eDisposition to `Encounter.hospitalization`, `Location`, `Observation`
+
+| Element(s)                                                           | FHIR target                                                                                  | Note                                                                    |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| .01-.10 destination name, code, address, GPS, USNG                   | `Encounter.hospitalization.destination` (`Location`/`Organization`)                          | Code system for .02 is the state facility list (local).                 |
+| .11 patients transported                                             | extension                                                                                    |                                                                         |
+| .16/.17/.18 transport method, mode, descriptors                      | extension                                                                                    |                                                                         |
+| .13-.15 patient movement, position                                   | extension / `Observation`                                                                    |                                                                         |
+| .19 acuity at release                                                | `Observation`                                                                                |                                                                         |
+| .20-.24 destination reason, type, in-patient, capability, prearrival | extensions; `Encounter.hospitalization.admitSource`/`dischargeDisposition` where codes align |                                                                         |
+| .25 prearrival alert time                                            | extension                                                                                    |                                                                         |
+| .26 instructions provided                                            | `Encounter` extension / `Communication`                                                      |                                                                         |
+| .27-.31 unit, patient, crew, transport disposition, refusal          | `Encounter.hospitalization.dischargeDisposition` (transport disposition) plus extensions     | One FHIR slot, five NEMSIS answers: proposal is a coded extension each. |
+| .32 level of care provided per protocol                              | extension                                                                                    |                                                                         |
+
+Most eResponse, eDispatch and eDisposition elements have no FHIR field, so the mapping leans on **extensions**.
+That is acceptable for round trip but weakens interoperability. It needs a decision (open question E).
+
+### ePayment to `Coverage`, `RelatedPerson`, `Claim` support (links to the later X12 work)
+
+| Element(s)                                                                                           | FHIR target                                                       | Note                                                                                |
+| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| .01 primary payment method, .57 payer type                                                           | `Coverage.type`                                                   |                                                                                     |
+| .09-.16, .59 insurance company id, name, billing priority, address, phone                            | `Coverage.payor` (`Organization`), `Coverage.order`               |                                                                                     |
+| .17/.18/.58 group id, policy id, group name                                                          | `Coverage.class` (group) and `subscriberId`                       |                                                                                     |
+| .19-.22, .60 insured name, relationship, DOB                                                         | `Coverage.subscriber` (`Patient`/`RelatedPerson`), `relationship` |                                                                                     |
+| .23-.32 closest relative / guardian                                                                  | `RelatedPerson` (with `relationship`)                             |                                                                                     |
+| .33-.39 employer                                                                                     | `Organization` or `Patient` extension                             |                                                                                     |
+| .02-.07 physician certification statement                                                            | `Claim`-adjacent `Consent`/`DocumentReference`; or extensions     | Billing-specific (PCS for non-emergency transport).                                 |
+| .40-.56 CMS service level, transport indicators, reason codes, mileage, supply items, ALS assessment | `Claim` (items) or extensions on `Encounter`                      | Billing detail that FHIR clinical resources do not model; closer to X12 837P loops. |
+
+Open question F: should ePayment go to FHIR at all, or wait for the X12 837P work (blocked) and then share one
+internal billing model? Proposal: do clinical sections first, map only `Coverage`/`RelatedPerson` now, and leave
+`.40-.56` (billing detail) to be mapped once, alongside 837P.
+
+### Open questions from this pass
+
+E. Extensions for the many NEMSIS elements with no FHIR field: one extension namespace we control (needs a
+canonical URL decision, like Q2), or inline them as `Observation`s with NEMSIS-coded codes?
+F. As above: how much of ePayment now.
+G. Scope order: which of ePatient, eVitals, eMedications, eProcedures, eSituation, eHistory, eDisposition do we
+implement first? Proposal for the first code milestone: ePatient, eVitals, eMedications, eProcedures, eSituation
+(impressions), and the shell, i.e. enough for a meaningful mPSC document.
+
 ## Not verified
 
 - I did not read the individual `Composition` StructureDefinition, the package, or the FHIR resource

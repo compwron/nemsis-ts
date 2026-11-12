@@ -2,6 +2,13 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-12 — FHIR (IHE mPSC) mapping: read the IG
+
+- Read the mPSC `2.0.0-draft` CI build (generated 2025-10-30): only 27 of about 390 NEMSIS elements have a
+  FHIR path (dAgency, eCustomConfiguration, eOutcome deferred to an absent "QORE Profile"). No clinical
+  sections are mapped. Wrote `docs/FHIR-MAPPING.md` as a proposal with open questions; no code. Waiting on the
+  owner to agree scope before anything else. Page text only; the package was not downloaded.
+
 ## 2026-11-12 — Handoff file
 
 - Added `docs/HANDOFF.md` (state, working agreements, pitfalls, blockers, ordered next steps) and a memory

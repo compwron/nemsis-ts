@@ -9,6 +9,33 @@ once that decision is made. Until then three locks keep a release from happening
    variable `RELEASE_ENABLED` is `true`.
 3. The job refuses to run while `private` is still `true` or the version is still `0.0.0`.
 
+## Plan for 0.0.1 and going public (owner intent, 2026-11-12)
+
+The owner wants to get what can be done finished, publish **0.0.1**, and make the repository public. This is a
+plan only: nothing below has been done, and publishing and the visibility change are explicit owner actions.
+
+What 0.0.1 would contain: the NEMSIS core as it stands (parse, serialize, XSD and Schematron validation,
+defined lists, `ws`). FHIR is not part of it unless a first slice lands and is marked experimental.
+
+Found while auditing the repo for going public (2026-11-12), for the owner to decide:
+
+- **Git history contains the owner's commit email** (all 33 commits use a `+github` plus-address at gmail.com;
+  see `git log --format=%ae`). It becomes public with the repo. Options: accept; rewrite history to GitHub's
+  `noreply` address before going public (destructive and needs a force-push; owner must choose); or only change
+  it for future commits. Not done.
+- No secrets or tokens found in tracked files (grep for password/token/secret matched only code and docs
+  about them). `.spec/`, `coverage/`, `dist/` are gitignored.
+- `README.md` names peak-server and emberstone (GPL/AGPL) as projects we did not copy from. Fine, but decide
+  whether to keep naming them in a public README.
+- `docs/HANDOFF.md` and `docs/NOTES.md` are working notes written for assistants; they read fine but mention the
+  owner's `gh` setup. Decide whether to keep them in the public tree.
+- Still open from the list below: NEMSIS TAC naming/attribution, Saxonica license re-read, name re-check
+  (`npm view nemsis-ts` right before publishing), account/2FA and trusted publishing setup.
+
+Suggested order once the owner says go: resolve the email-history question; re-check the npm name; write the
+0.0.1 CHANGELOG entry; set `version` to `0.0.1` and remove `"private": true` on a branch; dry run of the
+release workflow; make the repo public; publish; verify.
+
 ## Decisions to make first (not code)
 
 - [ ] **Go public?** npm provenance (a signed link from the package to this repo's workflow run) only works

@@ -2,6 +2,16 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-12 — FHIR mapping: review passes, verification, release plan
+
+- Per-element review for ePatient, eVitals, eMedications, then the shell, clinical context, disposition and
+  payment, in `docs/FHIR-MAPPING.md`. Owner decisions recorded there (both directions, both realms, hybrid
+  validation, extensions in a namespace we control, eProcedures undecided).
+- Verified against hl7.org page text: vital-sign LOINC codes, six code-system URIs, US Core 9.0.0 profile names.
+  Not verified: ICD-10-CM and SSN URIs, other LOINC codes. No code written.
+- Public-readiness audit and a 0.0.1 plan added to `docs/RELEASING.md`. Found: owner's commit email is in all
+  git history. Nothing published, nothing made public.
+
 ## 2026-11-12 — FHIR (IHE mPSC) mapping: read the IG
 
 - Read the mPSC `2.0.0-draft` CI build (generated 2025-10-30): only 27 of about 390 NEMSIS elements have a

@@ -299,6 +299,30 @@ G. Scope order: which of ePatient, eVitals, eMedications, eProcedures, eSituatio
 implement first? Proposal for the first code milestone: ePatient, eVitals, eMedications, eProcedures, eSituation
 (impressions), and the shell, i.e. enough for a meaningful mPSC document.
 
+## Decisions on the second pass (owner, 2026-11-12, provisional)
+
+- **E (extensions):** yes, extensions in one namespace we control, base URL configurable (same mechanism as Q2).
+- **F (ePayment):** `Coverage` and `RelatedPerson` now; `.40-.56` billing detail waits for the 837P work.
+- **G (first code milestone):** yes, with **eProcedures undecided**. Owner is unsure; the procedure mapping
+  (especially "performed by another unit") stays open and eProcedures is **not** in the first code milestone
+  until decided. First milestone: ePatient, eVitals, eMedications, eSituation (impressions), the shell.
+- The owner noted they may be near the limit of their own domain knowledge here: this document is a
+  well-researched proposal, not a reviewed clinical mapping. Say so in the README when FHIR ships, and mark
+  the `fhir` entry experimental.
+
+## Verification pass (2026-11-12)
+
+Checked against hl7.org (page text only):
+
+| Item                                                                                                                                                                                                                                                                                                               | Result                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| LOINC for BP panel `85354-9`, systolic `8480-6`, diastolic `8462-4`, heart rate `8867-4`, resp rate `9279-1`, body temperature `8310-5`, SpO2 `2708-6`, vital signs panel `85353-1`                                                                                                                                | Confirmed (R4 vital-signs page).                                                                        |
+| URIs SNOMED `http://snomed.info/sct`, LOINC `http://loinc.org`, RxNorm `http://www.nlm.nih.gov/research/umls/rxnorm`, UCUM `http://unitsofmeasure.org`, CVX `http://hl7.org/fhir/sid/cvx`, NDC `http://hl7.org/fhir/sid/ndc`                                                                                       | Confirmed (R4 terminologies-systems page).                                                              |
+| ICD-10-CM `http://hl7.org/fhir/sid/icd-10-cm`, SSN `http://hl7.org/fhir/sid/us-ssn`                                                                                                                                                                                                                                | **Not confirmed**: not found in the part of the page I could read. Still from memory.                   |
+| US Core current version                                                                                                                                                                                                                                                                                            | 9.0.0 (STU 9), FHIR R4, generated 2026-05-31 per the IG home page. Pin this and re-check before coding. |
+| US Core profiles/extensions named in this doc (Patient, Vital Signs with BP/heart rate/pulse ox/resp rate/temperature children, Condition Encounter Diagnosis, Encounter, Procedure, Immunization, AllergyIntolerance, Observation Occupation, Observation Pregnancy Status; birthsex, race, ethnicity extensions) | Exist by those names. Their element-level requirements were not read.                                   |
+| Other LOINC codes (ECG rhythm, ETCO2, GCS, glucose, AVPU, pain, APGAR, pregnancy status)                                                                                                                                                                                                                           | **Still unverified**: look up on loinc.org/the FHIR vitals/US Core pages before coding.                 |
+
 ## Not verified
 
 - I did not read the individual `Composition` StructureDefinition, the package, or the FHIR resource

@@ -2,6 +2,13 @@
 
 Running log of what was looked at and why, newest first. Facts only; decisions live in `PLAN.md` §8.
 
+## 2026-11-12 — History rewrite (commit email)
+
+- At the owner's request, rewrote all 36 commits' author/committer email to GitHub's `noreply` address
+  (`git filter-branch`, file contents unchanged), force-pushed `main`, and deleted the three Dependabot branches
+  (their PRs #1-#4 are closed; Dependabot should recreate). Backup bundle of the old history was kept in the
+  session scratch directory only. Repo-local `user.email` set to the noreply address.
+
 ## 2026-11-12 — FHIR mapping: review passes, verification, release plan
 
 - Per-element review for ePatient, eVitals, eMedications, then the shell, clinical context, disposition and

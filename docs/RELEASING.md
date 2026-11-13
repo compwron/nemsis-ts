@@ -19,10 +19,7 @@ defined lists, `ws`). FHIR is not part of it unless a first slice lands and is m
 
 Found while auditing the repo for going public (2026-11-12), for the owner to decide:
 
-- **Git history contains the owner's commit email** (all 33 commits use a `+github` plus-address at gmail.com;
-  see `git log --format=%ae`). It becomes public with the repo. Options: accept; rewrite history to GitHub's
-  `noreply` address before going public (destructive and needs a force-push; owner must choose); or only change
-  it for future commits. Not done.
+- **Commit email: resolved 2026-11-12.** History was rewritten so all commits use GitHub's `noreply` address and `main` was force-pushed. Old SHAs may linger on GitHub (PR refs, caches) until it garbage-collects them; owner accepted that.
 - No secrets or tokens found in tracked files (grep for password/token/secret matched only code and docs
   about them). `.spec/`, `coverage/`, `dist/` are gitignored.
 - `README.md` names peak-server and emberstone (GPL/AGPL) as projects we did not copy from. Fine, but decide

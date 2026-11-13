@@ -1,6 +1,6 @@
 # Handoff: read this first
 
-Written 2026-11-12 (state: commit `afce401` on `main`, CI green) for whoever continues this work, usually a
+Written 2026-11-12 (state: after the `ws` client commit; all SHAs changed in a history rewrite the same day, see `docs/NOTES.md`) for whoever continues this work, usually a
 fresh Claude session with no memory of the earlier ones. Facts here were true on that date; verify anything
 that names a file, version or PR before relying on it. The long story lives in `docs/PLAN.md` (decisions §8,
 upstream findings §9) and `docs/NOTES.md` (dated log of what was looked at and why, newest first).
@@ -87,8 +87,7 @@ About 2,850 Node tests plus 12 browser tests; coverage about 99% statements, 92%
 
 ## Dated follow-ups
 
-- **Dependabot PR #3** (`tsdown` 0.23.4 to 0.23.5) is held: it pulls transitive `@yuku-toolchain/*@0.25.0`,
-  published 2026-11-10, inside our 7-day window. Safe to merge on or after **2026-11-17** if CI is green.
+- **Dependabot PRs** were closed and their branches deleted in the 2026-11-12 history rewrite; Dependabot should reopen them. The `tsdown` 0.23.5 update pulled transitive `@yuku-toolchain/*@0.25.0` (published 2026-11-10), inside our 7-day window: merge it only on or after **2026-11-17**, if CI is green.
 - `spec-watch.yml` opens an issue when NEMSIS tags a new 3.5.x release (3.5.2 is scoped, not released).
 - Node 22 ends 2027-04-30: then raise `engines` to `>=24` and the CI matrix to 24/26 (+28 when it exists).
 

@@ -1,7 +1,11 @@
 # nemsis-ts
 
-> **Status: pre-alpha / statement of intent.** There is no code here yet. This README describes
-> what we plan to build and why.
+> **Status: pre-release, not yet published to npm.** The NEMSIS v3.5 core works: typed documents,
+> parse and serialize, XSD and Schematron validation, defined lists and a web-service client, for both
+> 3.5.0 and 3.5.1. X12 billing and FHIR are planned, not built. The API may still change.
+>
+> This is an independent project. It is not affiliated with, endorsed by or sponsored by NEMSIS, the
+> NEMSIS Technical Assistance Center, NHTSA or Saxonica.
 
 A TypeScript library for **reading, writing and validating EMS data**, starting with
 [NEMSIS v3.5](https://nemsis.org/v3-5-revision) and extending to the formats that EMS data has to
@@ -24,7 +28,7 @@ those pieces in one typed, tested, permissively licensed package.
 
 ## Goals
 
-### 1. NEMSIS v3.5 — core (first priority)
+### 1. NEMSIS v3.5 — core (working)
 
 Covering all three data sets from the
 [v3.5 data dictionary](https://nemsis.org/media/nemsis_v3/release-3.5.0/DataDictionary/PDFHTML/EMSDEMSTATE/index.html):
@@ -35,18 +39,23 @@ Covering all three data sets from the
 | **DEM** (`DEMDataSet`)     | Agency setup: units, personnel, facilities, configuration                                                                                            |
 | **State** (`StateDataSet`) | State-level rules and custom value lists                                                                                                             |
 
-Planned features:
+Features:
 
 - **Types** generated from the official XSDs (`EMSDataSet_v3.xsd`, `DEMDataSet_v3.xsd`,
-  `StateDataSet_v3.xsd`), with element IDs (e.g. `eTimes.03`) and human-readable names.
+  `StateDataSet_v3.xsd`) for NEMSIS 3.5.0 and 3.5.1, with element IDs (e.g. `eTimes.03`) and
+  human-readable names. A schema model with the NEMSIS documentation text is available at runtime.
 - **Parse** NEMSIS XML into typed objects, keeping `NV` (Not Values), `PN` (Pertinent Negatives)
   and `xsi:nil` intact.
 - **Build/serialize** typed objects back to schema-valid XML (round-trip safe).
-- **Validate** against the XSDs, and against the national Schematron rules through an XSLT step.
-- **Code sets**: NEMSIS value lists as typed enums/lookups.
-- Runs in **Node and the browser** (no native dependencies required for the core).
+- **Validate** against the XSDs (`nemsis-ts/validate`, libxml2 compiled to WebAssembly), and against
+  the national Schematron rules (`nemsis-ts/schematron`, using SaxonJS as an optional peer dependency).
+- **Code sets**: NEMSIS value lists as typed enums, plus the suggested defined lists
+  (`nemsis-ts/3.5.x/lists`).
+- **Web services**: a client for the NEMSIS SOAP web services (`nemsis-ts/ws`): SubmitData, RetrieveStatus,
+  QueryLimit. It is tested against the WSDL and fixtures, **not yet against a live server**.
+- Runs in **Node and the browser** (no native dependencies; file-system helpers live in `nemsis-ts/node`).
 
-### 2. X12 EDI — billing (second priority)
+### 2. X12 EDI — billing (planned, not started)
 
 EMS claims don't travel over NEMSIS, HL7 or FHIR. They use X12. For EMS revenue-cycle work we plan to support:
 
@@ -55,7 +64,7 @@ EMS claims don't travel over NEMSIS, HL7 or FHIR. They use X12. For EMS revenue-
 - **835** remittance advice: parse
 - **270/271** eligibility and **276/277** claim status: parse/build
 
-### 3. FHIR — clinical handoff (later)
+### 3. FHIR — clinical handoff (planned, design in progress)
 
 There is no US HL7 FHIR EMS implementation guide built on NEMSIS. The active FHIR work for US EMS
 comes from IHE, and we plan to track it:
@@ -63,7 +72,8 @@ comes from IHE, and we plan to track it:
 - **IHE mPSC** (mobile Paramedicine Summary of Care, formerly PCS): EMS → ED handoff, FHIR R4.
   Still a draft (`ihe.pcc.mpsc#2.0.0-draft`), and its
   [NEMSIS mapping](https://build.fhir.org/ig/IHE/PCC.PCS/NEMSIS-Mapping.html) is incomplete.
-  We'd like to provide (and upstream) a fuller NEMSIS → mPSC mapping.
+  We'd like to provide (and upstream) a fuller NEMSIS → mPSC mapping. A draft mapping and the open
+  design questions are in [docs/FHIR-MAPPING.md](docs/FHIR-MAPPING.md); no FHIR code exists yet.
 - **IHE QORE**: hospital → EMS outcome feedback, which maps back into `eOutcome`.
 - **IHE RIPT**: scheduled interfacility transports.
 
@@ -78,20 +88,22 @@ which lines up with NEMSIS v3.
 - Not a replacement for official NEMSIS compliance testing.
 - Not a general-purpose FHIR or X12 toolkit. We cover the EMS-relevant subset.
 
-## Planned approach
+## Approach
 
-See **[docs/PLAN.md](docs/PLAN.md)** for the full build plan (CI, TDD, milestones).
+See **[docs/PLAN.md](docs/PLAN.md)** for the build plan, decisions and milestones.
 
 - The definitive definitions are the XSDs, national Schematron and WSDL from NEMSIS TAC's git repo
   (`https://git.nemsis.org/scm/nep/nemsis_public.git`), pinned to release tags `3.5.0.251001CP6` and `3.5.1.251001CP2`.
   They're fetched and checksum-verified at build time, not committed.
-- Generate types from those XSDs with our own generator (spiking `cxsd` first), then layer
-  hand-written ergonomics on top.
-- Parse and build XML with `fast-xml-parser` / `xmlbuilder2`.
-- Validate XSDs with `xmllint-wasm` (or `libxmljs2` on Node). Run Schematron as a separate XSLT step.
+- Types and the schema model are generated from those XSDs by our own generator (`pnpm codegen`); the
+  generated files are committed and CI checks they are up to date.
+- XML is parsed with `saxes` and serialized by our own code; round trips are tested on the 125 official
+  sample files per version.
+- XSD validation uses `xmllint-wasm`. Schematron runs as a separate XSLT step through SaxonJS
+  (`saxon-js` and `xslt3`, optional peers under Saxonica's own license; they are not bundled).
 - **Clean room:** we build only from official NEMSIS artifacts and public standards. We don't read or
   copy source from other implementations, including the GPL/AGPL projects above.
-- Test-first, driven by official NEMSIS compliance test cases, sample data and expected Schematron output.
+- Test-first, driven by official NEMSIS sample data and expected Schematron output (about 2,850 tests).
 
 ## Usage (early, API may change)
 
@@ -150,7 +162,7 @@ outcome.status.description; // "Successful import of a file, with [WARNING] leve
 outcome.report?.xmlValidation?.errors; // element-level XSD errors; report.schematronReports holds SVRL
 ```
 
-Status: pre-release, not yet published to npm. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
+Not yet published to npm. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
 
 ## Roadmap (tentative)
 
@@ -164,11 +176,12 @@ Status: pre-release, not yet published to npm. See the [changelog](CHANGELOG.md)
 - [x] NEMSIS web-service (SOAP) client: SubmitData, RetrieveStatus, QueryLimit
 - [ ] X12 837P generation from an EMS record
 - [ ] X12 835 parsing
-- [ ] NEMSIS → FHIR (IHE mPSC) mapping
+- [ ] NEMSIS ⇄ FHIR (IHE mPSC / US Core) mapping (draft: [docs/FHIR-MAPPING.md](docs/FHIR-MAPPING.md))
 
 ## Contributing
 
-Ideas, use cases and pointers to prior art are welcome. Please open an issue.
+Ideas, use cases and pointers to prior art are welcome. Please open an issue. Contributions must be clean room: do not
+submit code derived from GPL/AGPL implementations.
 
 ## License
 

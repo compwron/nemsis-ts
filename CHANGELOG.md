@@ -5,6 +5,11 @@ and the project follows [Semantic Versioning](https://semver.org/). Versions bel
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-11-12
+
+Documentation only: the README (and so the npm page) no longer says the package is unpublished, and gains badges.
+First release made through the CI release workflow (npm trusted publishing, staged).
+
 ## [0.0.1] - 2026-11-12
 
 First release. Supports NEMSIS **3.5.0** (`3.5.0.251001CP6`) and **3.5.1**

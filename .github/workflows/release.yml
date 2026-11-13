@@ -1,4 +1,4 @@
-# Publishes to npm. Deliberately inert until the maintainers turn it on:
+# Stages a release on npm (a maintainer approves it). Deliberately inert until the maintainers turn it on:
 #   - it only runs when started by hand (workflow_dispatch), never on push or tag;
 #   - the job is skipped unless the repository variable RELEASE_ENABLED is "true";
 #   - it refuses while package.json still says "private": true or version 0.0.0;
@@ -57,9 +57,11 @@ jobs:
       - run: pnpm build
       - run: pnpm check:bundle
       - run: pnpm check:package
-      - name: Publish (dry run)
+      # The npm trusted publisher is configured for "stage publish" only: CI uploads the package to npm's
+      # staging area and a maintainer approves it with 2FA (`npm stage list`, then `npm stage approve <id>`).
+      - name: Stage publish (dry run)
         if: ${{ inputs.dry-run }}
-        run: npm publish --provenance --access public --dry-run
-      - name: Publish
+        run: npm stage publish . --provenance --access public --dry-run
+      - name: Stage publish
         if: ${{ !inputs.dry-run }}
-        run: npm publish --provenance --access public
+        run: npm stage publish . --provenance --access public

@@ -9,6 +9,15 @@ As of 2026-11-12 nothing is published to npm. The GitHub repository was found to
 2. The job refuses to run while `private` is `true` or the version is `0.0.0`.
 3. The `npm` environment can require a reviewer's approval.
 
+## Trusted publisher is set up (2026-11-12)
+
+0.0.1 was published by hand. `npm trust github nemsis-ts --file release.yml --repo compwron/nemsis-ts --env npm
+--allow-stage-publish` was run: trust id `0dce62ba-...`, permission **stage publish only**. So CI cannot
+publish directly: `release.yml` runs `npm stage publish`, and a maintainer then approves with 2FA
+(`npm stage list nemsis-ts`, then `npm stage approve <stage-id>`). Per npm's docs a new trust entry must
+complete its first publish within 2 days, or it expires and must be recreated. Each release: run the workflow with
+dry-run first, then without; then approve the staged package. Not yet tested end to end.
+
 ## Plan for 0.0.1 and going public (owner intent, 2026-11-12)
 
 The owner wants to get what can be done finished, publish **0.0.1**, and make the repository public. This is a

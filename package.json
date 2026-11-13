@@ -1,6 +1,6 @@
 {
 	"name": "nemsis-ts",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Clean-room TypeScript library for reading, writing and validating NEMSIS v3.5 EMS data",
 	"type": "module",
 	"engines": {

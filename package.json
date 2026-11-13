@@ -1,7 +1,6 @@
 {
 	"name": "nemsis-ts",
-	"version": "0.0.0",
-	"private": true,
+	"version": "0.0.1",
 	"description": "Clean-room TypeScript library for reading, writing and validating NEMSIS v3.5 EMS data",
 	"type": "module",
 	"engines": {
@@ -94,6 +93,10 @@
 		"xslt3": "2.7.0"
 	},
 	"license": "Apache-2.0",
+	"homepage": "https://github.com/compwron/nemsis-ts#readme",
+	"bugs": {
+		"url": "https://github.com/compwron/nemsis-ts/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/compwron/nemsis-ts.git"

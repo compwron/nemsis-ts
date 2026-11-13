@@ -52,13 +52,26 @@ release workflow; make the repo public; publish; verify.
 - **npm name:** re-check (`npm view nemsis-ts`) immediately before publishing, as planned.
 - **npm account and token:** the owner has an npm account and a new publishing token that is not stored anywhere
   reachable yet. Keep it that way until needed. Do not paste it into chat, files, commits or logs.
-  Findings from third-party write-ups and npm's docs index (not verified end to end): npm trusted publishing
-  (OIDC) apparently needs the package to exist first, and npm has no "pending publisher" like PyPI. So the first
-  0.0.1 publish is likely a manual `npm publish` from the owner's machine (use `--provenance=false`; provenance
-  needs CI), after which the trusted publisher is configured on npmjs.com and later releases use the workflow with
-  no stored token. If the owner would rather publish 0.0.1 from CI with a token, store it only as a secret scoped
-  to the GitHub `npm` environment (required reviewer), never as a repository-wide secret, and delete it after
-  trusted publishing is set up. Check npm's trusted-publisher page for the current first-publish rule before relying on this.
+- **Trusted publishing (read docs.npmjs.com/trusted-publishers on 2026-11-12):** this is what we want; no token is
+  needed to publish. Facts from the page:
+  - Needs npm CLI 11.5.1+ and Node 22.14+, a GitHub-hosted runner (self-hosted not supported) and
+    `id-token: write` (our `release.yml` has all of that).
+  - On npmjs.com: package settings, Trusted Publisher, GitHub Actions; fields: owner `compwron`, repository
+    `nemsis-ts`, workflow file `release.yml`, environment `npm`. Existing entries cannot be edited, only
+    deleted and recreated. npm does **not** validate the entry when saving; mistakes show up only when
+    publishing. `package.json` `repository.url` must exactly match the GitHub repo (it is
+    `git+https://github.com/compwron/nemsis-ts.git`; fine).
+  - A new entry "must complete its first successful publish within 2 days" or it expires.
+  - Provenance is generated only when the repo is public and the package is public; not for private repos.
+  - After it works, set "Require two-factor authentication and disallow tokens" under the package's Publishing
+    access, which also makes the stored token useless; then delete that token.
+  - Option: `npm stage publish` is always allowed for a trusted publisher (CI stages, a human approves
+    interactively), which is stricter than letting CI publish directly. Decide later.
+  - **Unclear: whether a trusted publisher can be added before the package exists.** The page implies configuring
+    comes before the first publish (the 2-day rule), while third-party write-ups say the package must exist and
+    npm has no pending publisher. Try it in the npm UI first. If it is not possible, publish 0.0.1 once by hand from
+    the owner's machine with the token (`npm publish --access public`, no provenance), then configure trusted
+    publishing for every later release. Either way no token needs to be stored in GitHub.
 
 ## Decisions to make first (not code)
 

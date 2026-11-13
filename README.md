@@ -1,6 +1,11 @@
 # nemsis-ts
 
-> **Status: pre-release, not yet published to npm.** The NEMSIS v3.5 core works: typed documents,
+[![npm version](https://img.shields.io/npm/v/nemsis-ts)](https://www.npmjs.com/package/nemsis-ts)
+[![CI](https://github.com/compwron/nemsis-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/compwron/nemsis-ts/actions/workflows/ci.yml)
+[![license: Apache-2.0](https://img.shields.io/npm/l/nemsis-ts)](LICENSE)
+[![node](https://img.shields.io/node/v/nemsis-ts)](package.json)
+
+> **Status: pre-release (0.0.x).** The NEMSIS v3.5 core works: typed documents,
 > parse and serialize, XSD and Schematron validation, defined lists and a web-service client, for both
 > 3.5.0 and 3.5.1. X12 billing and FHIR are planned, not built. The API may still change.
 >
@@ -162,7 +167,7 @@ outcome.status.description; // "Successful import of a file, with [WARNING] leve
 outcome.report?.xmlValidation?.errors; // element-level XSD errors; report.schematronReports holds SVRL
 ```
 
-Not yet published to npm. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
+Install with `npm install nemsis-ts`. See the [changelog](CHANGELOG.md) and the [release checklist](docs/RELEASING.md).
 
 ## Roadmap (tentative)
 

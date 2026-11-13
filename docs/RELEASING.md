@@ -1,13 +1,13 @@
 # Releasing
 
-Nothing is published yet, and the repository is private on purpose: the maintainers are waiting on external
-discussions before going public. Everything below is prepared so that publishing is a short, boring checklist
-once that decision is made. Until then three locks keep a release from happening by accident:
+As of 2026-11-12 nothing is published to npm. The GitHub repository was found to be **public** on 2026-11-12 (GitHub reports
+`private: false`; HANDOFF had said private), so the "go public" decision below is moot; npm provenance can work. The `release/0.0.1` branch removes
+`"private": true` and sets version `0.0.1` for the first manual publish. Locks that remain:
 
-1. `package.json` has `"private": true` (npm refuses to publish it) and `version` is `0.0.0`.
-2. `.github/workflows/release.yml` only runs when started by hand, and its job is skipped unless the repository
+1. `.github/workflows/release.yml` only runs when started by hand, and its job is skipped unless the repository
    variable `RELEASE_ENABLED` is `true`.
-3. The job refuses to run while `private` is still `true` or the version is still `0.0.0`.
+2. The job refuses to run while `private` is `true` or the version is `0.0.0`.
+3. The `npm` environment can require a reviewer's approval.
 
 ## Plan for 0.0.1 and going public (owner intent, 2026-11-12)
 

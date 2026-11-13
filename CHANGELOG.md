@@ -1,11 +1,13 @@
 # Changelog
 
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and the project follows [Semantic Versioning](https://semver.org/) once released (nothing is published yet).
+and the project follows [Semantic Versioning](https://semver.org/). Versions below 1.0 may change the API in any release.
 
 ## [Unreleased]
 
-First public release candidate (`0.1.0`). Supports NEMSIS **3.5.0** (`3.5.0.251001CP6`) and **3.5.1**
+## [0.0.1] - 2026-11-12
+
+First release. Supports NEMSIS **3.5.0** (`3.5.0.251001CP6`) and **3.5.1**
 (`3.5.1.251001CP2`), as separate subpath exports so applications load only the version they use.
 
 ### Added
@@ -41,4 +43,5 @@ First public release candidate (`0.1.0`). Supports NEMSIS **3.5.0** (`3.5.0.2510
 - Schematron runs on SaxonJS 2.7 with two small, documented workarounds (`src/schematron/patches.ts`).
 - The web-service client is tested against fixtures and the WSDL's own schema, not yet against a live server
   (no test account); `schemaVersion` follows the guide's example (`3.5.0`), and state servers may differ.
-- Not yet implemented: X12 837P/835, FHIR (IHE mPSC), NEMSIS 3.5.2.
+- Not yet implemented: X12 837P/835, FHIR (IHE mPSC / US Core; draft design in `docs/FHIR-MAPPING.md`), NEMSIS 3.5.2.
+- Pre-1.0: the API may change between releases.

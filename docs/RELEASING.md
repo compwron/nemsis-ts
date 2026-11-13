@@ -27,8 +27,7 @@ Found while auditing the repo for going public (2026-11-12), for the owner to de
   about them). `.spec/`, `coverage/`, `dist/` are gitignored.
 - `README.md` names peak-server and emberstone (GPL/AGPL) as projects we did not copy from. Fine, but decide
   whether to keep naming them in a public README.
-- `docs/HANDOFF.md` and `docs/NOTES.md` are working notes written for assistants; they read fine but mention the
-  owner's `gh` setup. Decide whether to keep them in the public tree.
+- `docs/HANDOFF.md` and `docs/NOTES.md`: **owner decided to keep both in the public tree** (2026-11-12).
 - Still open from the list below: NEMSIS TAC naming/attribution, Saxonica license re-read, name re-check
   (`npm view nemsis-ts` right before publishing), account/2FA and trusted publishing setup.
 

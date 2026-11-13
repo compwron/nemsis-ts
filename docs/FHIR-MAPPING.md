@@ -323,6 +323,43 @@ Checked against hl7.org (page text only):
 | US Core profiles/extensions named in this doc (Patient, Vital Signs with BP/heart rate/pulse ox/resp rate/temperature children, Condition Encounter Diagnosis, Encounter, Procedure, Immunization, AllergyIntolerance, Observation Occupation, Observation Pregnancy Status; birthsex, race, ethnicity extensions) | Exist by those names. Their element-level requirements were not read.                                   |
 | Other LOINC codes (ECG rhythm, ETCO2, GCS, glucose, AVPU, pain, APGAR, pregnancy status)                                                                                                                                                                                                                           | **Still unverified**: look up on loinc.org/the FHIR vitals/US Core pages before coding.                 |
 
+## US Core 9.0.0 package check (2026-11-12)
+
+Downloaded `hl7.fhir.us.core#9.0.0` (FHIR 4.0.1, 218 files, tarball sha256
+`af873979a019c9336f8e07882463f5ca6286b5bd20dc2529b80e15cc25f1c0f5`) from `hl7.org/fhir/us/core/package.tgz`
+into a scratch directory (not committed) and read the StructureDefinitions' differentials.
+
+Confirmed:
+- URIs: `http://hl7.org/fhir/sid/icd-10-cm` and `http://hl7.org/fhir/sid/us-ssn` appear in the package (also cvx, ndc, us-npi).
+- Extensions: `us-core-race` (`ombCategory` 0..6 required binding, `detailed`, `text` **required**), `us-core-ethnicity`
+  (same shape, separate from race), `us-core-birthsex` (active), `us-core-individual-sex` (active; the Patient profile
+  uses this one), `us-core-sex` (**retired**). Earlier tables in this doc said `birthsex`; `individual-sex` is
+  now the better target for `ePatient.25`.
+
+Constraints that bite the mapping:
+- **Patient:** `identifier` is 1..* (system and value required), `name` 1..*. `ePatient.01` is optional in NEMSIS, so a
+  US Core Patient needs a synthesized identifier (e.g. from the PCR number) or we do not claim US Core conformance.
+  `address.state` has an extensible USPS state binding, so FIPS codes must be converted to USPS letters.
+- **Blood pressure:** US Core BP requires **both** systolic and diastolic components. `eVitals.07` (DBP) is optional
+  in NEMSIS, so a systolic-only reading cannot claim the US Core BP profile; fall back to the base FHIR
+  vital-signs profile for those. The US Core pulse-oximetry profile requires two codings (pulse ox and O2 sat).
+- **Vital signs (base):** `category` with the `vital-signs` code is required; `dataAbsentReason` is must-support, which
+  fits the NV/PN plan.
+- **Condition (encounter diagnosis):** `category` encounter-diagnosis and `code` required (extensible, includes ICD-10-CM),
+  fine for `eSituation.11/.12`.
+- **Encounter:** `type` and `subject` required; `identifier` needs system and value; `dischargeDisposition` has a
+  _preferred_ binding to v3 US discharge dispositions, so NEMSIS dispositions need a crosswalk or an extension.
+- **Procedure:** `code` required. **Immunization:** `vaccineCode` extensible to CVX; the NEMSIS immunization list is
+  NEMSIS-specific, so map to CVX or use text. **AllergyIntolerance:** `code` required. **Occupation:** `subject` and
+  coded value required, industry as a component. **Pregnancy status:** `subject`, `effectiveDateTime` and a coded value required.
+- **No US Core profile exists for `MedicationAdministration` or `MedicationStatement`** (none in the package), so
+  eMedications and eHistory current medications use base R4 resources and cannot claim US Core conformance.
+
+Consequence: we can offer a "US Core where it fits" mode, with per-resource profile claims in `meta.profile` only
+when the data satisfies the profile, and base R4 otherwise. This is a design decision for the owner (open question H).
+
+Still unverified: LOINC codes for ECG rhythm, ETCO2, GCS, glucose, AVPU, pain, APGAR and pregnancy status.
+
 ## Not verified
 
 - I did not read the individual `Composition` StructureDefinition, the package, or the FHIR resource

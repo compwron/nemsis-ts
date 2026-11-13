@@ -32,6 +32,34 @@ Suggested order once the owner says go: resolve the email-history question; re-c
 0.0.1 CHANGELOG entry; set `version` to `0.0.1` and remove `"private": true` on a branch; dry run of the
 release workflow; make the repo public; publish; verify.
 
+## Owner answers and research, 2026-11-12
+
+- **README naming of peak-server and emberstone:** keep.
+- **NEMSIS TAC:** the owner does not want to contact other organizations; reading public websites is fine.
+  Read: nemsis.org front page and its "XSD guides & usage" page, plus the fetched artifacts under `.spec/`
+  (XSD, Schematron, WSDL, defined lists). None of them states a license, copyright notice, trademark or
+  logo policy, or attribution rule (page text only; I did not find a license file in the fetched tree).
+  Absence of a statement is not permission: keep the README's "independent, not affiliated or endorsed" wording
+  and avoid logos. The risk is the owner's call.
+- **Saxonica:** re-read the license shipped in `saxon-js` and `xslt3` 2.7.0 (`LICENSE.txt`, "Version 1.0, June
+  2020"; npm field says "SEE LICENSE IN LICENSE.txt"; the two files are byte-identical). Terms that matter:
+  use is allowed on the computer running it; **redistribution in binary form, unmodified, is allowed as part of an
+  application that uses it, with the copyright notice and disclaimer reproduced**; no reverse engineering; no
+  endorsement use of Saxonica's name; copying it to a site whose primary purpose is making it available to third
+  parties needs written permission. We do not bundle or ship it (optional peer dependencies installed by the
+  user), which stays clearly inside these terms. If we ever bundled it we would have to reproduce the notice and
+  disclaimer. Not legal advice. The Saxonica web docs for the license did not load for me.
+- **npm name:** re-check (`npm view nemsis-ts`) immediately before publishing, as planned.
+- **npm account and token:** the owner has an npm account and a new publishing token that is not stored anywhere
+  reachable yet. Keep it that way until needed. Do not paste it into chat, files, commits or logs.
+  Findings from third-party write-ups and npm's docs index (not verified end to end): npm trusted publishing
+  (OIDC) apparently needs the package to exist first, and npm has no "pending publisher" like PyPI. So the first
+  0.0.1 publish is likely a manual `npm publish` from the owner's machine (use `--provenance=false`; provenance
+  needs CI), after which the trusted publisher is configured on npmjs.com and later releases use the workflow with
+  no stored token. If the owner would rather publish 0.0.1 from CI with a token, store it only as a secret scoped
+  to the GitHub `npm` environment (required reviewer), never as a repository-wide secret, and delete it after
+  trusted publishing is set up. Check npm's trusted-publisher page for the current first-publish rule before relying on this.
+
 ## Decisions to make first (not code)
 
 - [ ] **Go public?** npm provenance (a signed link from the package to this repo's workflow run) only works

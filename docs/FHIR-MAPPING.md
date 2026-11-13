@@ -360,6 +360,11 @@ when the data satisfies the profile, and base R4 otherwise. This is a design dec
 
 Still unverified: LOINC codes for ECG rhythm, ETCO2, GCS, glucose, AVPU, pain, APGAR and pregnancy status.
 
+## Decision H (owner, 2026-11-12)
+
+"US Core where it fits": a resource claims a US Core profile in `meta.profile` only when the data satisfies it;
+otherwise it is emitted as base R4. Applies to both directions' reporting (the importer accepts either).
+
 ## Not verified
 
 - I did not read the individual `Composition` StructureDefinition, the package, or the FHIR resource

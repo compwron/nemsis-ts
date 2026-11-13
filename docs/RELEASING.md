@@ -109,6 +109,7 @@ release workflow; make the repo public; publish; verify.
 4. **Tag and announce:** create the Git tag `v<version>` and a GitHub release from the changelog entry.
 5. **Verify:** `npm view <name> version`; the package page shows the provenance badge; install it in a scratch
    project and run the README example.
+   - [ ] **README badges** (add only after the first publish and once the repo is public, otherwise they render broken): npm version, CI status (`ci.yml`), license, and optionally npm downloads / bundle size. Use shields.io or GitHub's native workflow badge.
 6. **Afterwards:** set `RELEASE_ENABLED` back to something other than `true` if you want publishing off
    between releases.
 
